@@ -35,6 +35,9 @@ const homeAgeOptions = [
 ];
 
 const MAX_FILES = 5;
+const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_UPLOAD_PRESET =
+  import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "gptimages";
 
 const defaultFormState = {
   clientName: "",
@@ -59,7 +62,9 @@ const PublicSurveyPage = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState(defaultFormState);
-  const [files, setFiles] = useState([]);
+  const [media, setMedia] = useState([]);
+
+  const hasPendingUploads = media.some((item) => item.status === "uploading");
 
   const title = useMemo(() => {
     if (!builder) return "Bathroom Estimate Request";
@@ -93,9 +98,34 @@ const PublicSurveyPage = () => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleFilesChange = (event) => {
+  const uploadFileToCloudinary = async (file) => {
+    if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
+      throw new Error("Cloudinary configuration missing");
+    }
+    const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`;
+    const form = new FormData();
+    form.append("file", file);
+    form.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+    form.append("folder", "estimate-pro/surveys");
+
+    const response = await fetch(url, {
+      method: "POST",
+      body: form,
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error?.message || "Cloud upload failed");
+    }
+    return {
+      url: data.secure_url,
+      publicId: data.public_id,
+    };
+  };
+
+  const handleFilesChange = async (event) => {
     const selectedFiles = Array.from(event.target.files || []);
-    if (selectedFiles.length + files.length > MAX_FILES) {
+    if (selectedFiles.length === 0) return;
+    if (selectedFiles.length + media.length > MAX_FILES) {
       toast({
         variant: "destructive",
         title: `Max ${MAX_FILES} files`,
@@ -103,32 +133,56 @@ const PublicSurveyPage = () => {
       });
       return;
     }
-    setFiles((prev) => [...prev, ...selectedFiles]);
+    for (const file of selectedFiles) {
+      const tempId = `${file.name}-${Date.now()}`;
+      setMedia((prev) => [
+        ...prev,
+        { id: tempId, name: file.name, status: "uploading" },
+      ]);
+      try {
+        const result = await uploadFileToCloudinary(file);
+        setMedia((prev) =>
+          prev.map((item) =>
+            item.id === tempId
+              ? { ...item, status: "ready", url: result.url }
+              : item
+          )
+        );
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Upload failed",
+          description: error.message,
+        });
+        setMedia((prev) => prev.filter((item) => item.id !== tempId));
+      }
+    }
   };
 
-  const removeFile = (index) => {
-    setFiles((prev) => prev.filter((_, idx) => idx !== index));
+  const removeFile = (id) => {
+    setMedia((prev) => prev.filter((item) => item.id !== id));
   };
 
   const buildPayload = () => {
-    const payload = new FormData();
-    payload.append("clientName", formData.clientName);
-    if (formData.clientEmail) payload.append("clientEmail", formData.clientEmail);
-    payload.append("clientPhone", formData.clientPhone);
-    payload.append("bathroomType", formData.bathroomType);
-    payload.append("tilingLevel", formData.tilingLevel);
-    payload.append("designStyle", formData.designStyle);
-    payload.append("homeAgeCategory", formData.homeAgeCategory);
-
-    if (formData.measurementMode === "total") {
-      payload.append("totalArea", formData.totalArea);
-    } else {
-      payload.append("floorLength", formData.floorLength);
-      payload.append("floorWidth", formData.floorWidth);
-      payload.append("wallHeight", formData.wallHeight);
+    const payload = {
+      clientName: formData.clientName,
+      clientPhone: formData.clientPhone,
+      bathroomType: formData.bathroomType,
+      tilingLevel: formData.tilingLevel,
+      designStyle: formData.designStyle,
+      homeAgeCategory: formData.homeAgeCategory,
+      photoUrls: media.filter((item) => item.url).map((item) => item.url),
+    };
+    if (formData.clientEmail) {
+      payload.clientEmail = formData.clientEmail;
     }
-
-    files.forEach((file) => payload.append("photos", file));
+    if (formData.measurementMode === "total") {
+      payload.totalArea = formData.totalArea;
+    } else {
+      payload.floorLength = formData.floorLength;
+      payload.floorWidth = formData.floorWidth;
+      payload.wallHeight = formData.wallHeight;
+    }
     return payload;
   };
 
@@ -159,6 +213,14 @@ const PublicSurveyPage = () => {
         variant: "destructive",
         title: "Missing information",
         description: "Please complete the required fields before submitting.",
+      });
+      return;
+    }
+    if (hasPendingUploads) {
+      toast({
+        variant: "destructive",
+        title: "Uploads in progress",
+        description: "Please wait for files to finish uploading.",
       });
       return;
     }
@@ -496,20 +558,26 @@ const PublicSurveyPage = () => {
                     <p className="text-xs text-muted-foreground mt-2">
                       Up to {MAX_FILES} files. Each up to 20MB.
                     </p>
-                    {files.length > 0 && (
+                    {media.length > 0 && (
                       <ul className="mt-4 text-left space-y-2">
-                        {files.map((file, index) => (
+                        {media.map((file) => (
                           <li
-                            key={`${file.name}-${index}`}
-                            className="flex items-center justify-between rounded-md bg-gray-100 px-3 py-2"
+                            key={file.id}
+                            className="flex items-center justify-between rounded-md bg-gray-100 px-3 py-2 text-sm"
                           >
-                            <span className="text-sm font-medium truncate">
-                              {file.name}
-                            </span>
+                            <div className="flex flex-col">
+                              <span className="font-medium truncate">{file.name}</span>
+                              <span className="text-xs text-muted-foreground">
+                                {file.status === "uploading"
+                                  ? "Uploading..."
+                                  : "Ready"}
+                              </span>
+                            </div>
                             <button
                               type="button"
                               className="text-xs text-red-500"
-                              onClick={() => removeFile(index)}
+                              onClick={() => removeFile(file.id)}
+                              disabled={file.status === "uploading"}
                             >
                               Remove
                             </button>
@@ -523,7 +591,7 @@ const PublicSurveyPage = () => {
                 <div className="sticky bottom-0 bg-white border-t border-gray-100 py-4">
                   <Button
                     type="submit"
-                    disabled={submitting}
+                    disabled={submitting || hasPendingUploads}
                     className="w-full bg-orange-500 hover:bg-orange-600"
                   >
                     {submitting ? (
