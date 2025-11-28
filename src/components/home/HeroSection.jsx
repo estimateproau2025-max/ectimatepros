@@ -59,7 +59,7 @@ const HeroSection = () => {
           >
             <div className="relative max-w-md mx-auto">
               <img 
-                src="https://storage.googleapis.com/hostinger-horizons-assets-prod/0456cdb4-021d-4da8-be6f-453580d907aa/d3d0e0f27e581942612e6b81cad0be76.png"
+                src="/WhatsApp Image 2025-11-28 at 1.03.26 AM.jpeg"
                 alt="Happy construction worker using EstiMate Pro on mobile phone"
                 className="w-full h-auto rounded-2xl shadow-2xl"
               />
