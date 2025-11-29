@@ -15,7 +15,7 @@ const CtaSection = () => {
 
   const handleStartTrial = async () => {
     if (!session?.accessToken) {
-      navigate('/auth');
+      navigate('/auth?tab=signup');
       return;
     }
 
@@ -61,9 +61,8 @@ const CtaSection = () => {
             Ready to Transform Your Quoting Process?
           </h2>
           <p className="text-xl text-white mb-8 opacity-90">
-            Join hundreds of builders who are already saving time and winning more jobs with EstiMate.
-          </p>
-          <Button 
+          Save time and win more jobs with EstiMate Pro          </p>
+          {/* <Button 
             onClick={handleStartTrial}
             className="bg-white text-orange-500 hover:bg-gray-100 px-8 py-3 text-lg font-semibold"
             disabled={loading}
@@ -79,7 +78,7 @@ const CtaSection = () => {
                 <ExternalLink className="ml-2 h-5 w-5" />
               </>
             )}
-          </Button>
+          </Button> */}
         </motion.div>
       </div>
     </motion.section>

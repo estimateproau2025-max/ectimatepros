@@ -22,6 +22,7 @@ import AdminDashboardPage from '@/pages/AdminDashboardPage';
 const SiteLayout = () => {
   const location = useLocation();
   const isAuthPage = location.pathname === '/auth';
+  const isSurveyPage = location.pathname.startsWith('/survey/');
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -29,7 +30,7 @@ const SiteLayout = () => {
       <main className="flex-grow">
         <Outlet />
       </main>
-      {!isAuthPage && <Footer />}
+      {!isAuthPage && !isSurveyPage && <Footer />}
     </div>
   );
 };

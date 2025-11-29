@@ -7,8 +7,24 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Home, UploadCloud, Check, Link as LinkIcon, ExternalLink } from 'lucide-react';
+import { Home, UploadCloud, Check, Link as LinkIcon, ExternalLink, Map, Ruler, FileImage } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+
+const tilingLevels = [
+  { value: "Budget", label: "Budget – floor plus splash-zones" },
+  { value: "Standard", label: "Standard – feature walls + wet areas" },
+  { value: "Premium", label: "Premium – floor to ceiling" },
+];
+
+const bathroomTypes = ["House / Unit", "Apartment", "Other"];
+
+const homeAgeOptions = [
+  "Less than 10 years",
+  "10-30 years",
+  "30-50 years",
+  "Over 50 years",
+  "Not sure",
+];
 
 const surveyConfig = {
   welcome_title: "Hi there! Welcome to EstiMate",
@@ -19,70 +35,39 @@ const surveyConfig = {
       step: 1,
       title: "Contact Information",
       fields: [
-        { id: "full_name", label: "Your Name *", type: "text", placeholder: "Enter your full name" },
-        { id: "phone_number", label: "Your Contact Number *", type: "text", placeholder: "Enter your phone number" }
+        { id: "clientName", label: "Your Name *", type: "text", placeholder: "" },
+        { id: "clientEmail", label: "Email", type: "email", placeholder: "" },
+        { id: "clientPhone", label: "Phone *", type: "text", placeholder: "04xx xxx xxx" }
       ]
     },
     {
       step: 2,
       title: "Bathroom Measurements",
       fields: [
-        { 
-          id: "measurement_type", type: "radio_toggle", options: [
-            { value: "direct", label: "Enter total size directly", sublabel: "If you know the total square meters" },
-            { value: "calculate", label: "Let us calculate it for you", sublabel: "Enter individual measurements" }
-          ],
-          width: "full"
-        },
-        { id: "total_size", label: "Total Size (square meters) *", type: "text", placeholder: "e.g., 12.5", condition: { field: "measurement_type", value: "direct" }, width: "full" }
+        { id: "floorLength", label: "Floor Length (m) *", type: "number", placeholder: "e.g., 3.5" },
+        { id: "floorWidth", label: "Floor Width (m) *", type: "number", placeholder: "e.g., 2.8" },
+        { id: "wallHeight", label: "Wall Height (m) *", type: "number", placeholder: "e.g., 2.4" }
       ]
     },
     {
       step: 3,
-      title: "Property Details",
+      title: "Home & Style",
       fields: [
-        { id: "property_type", label: "Please select one option *", type: "radio", options: ["House or Unit", "Apartment", "Other / Not sure"], width: "full" },
-        { id: "home_age", label: "Age of Home *", type: "radio", options: ["Less than 10 years old", "10-30 years old", "30-50 years old", "Over 50 years old", "Not sure"], width: "full" }
+        { id: "bathroomType", label: "Bathroom location *", type: "radio", options: bathroomTypes, width: "full" },
+        { id: "tilingLevel", label: "Tiling preference *", type: "radio", options: tilingLevels, width: "full" },
+        { id: "homeAgeCategory", label: "Age of home *", type: "select", options: homeAgeOptions },
+        { id: "designStyle", label: "Design notes", type: "text", placeholder: "Preferred colours, fittings, style..." }
       ]
     },
     {
       step: 4,
-      title: "Tile Preference and Design Choices",
-      fields: [
-        { id: "tile_preference", label: "Please select one option *", type: "radio", options: [
-            { value: "budget", label: "Budget", "sublabel": "Tiles in wet areas only" },
-            { value: "standard", label: "Standard", "sublabel": "Tiles in wet areas PLUS certain areas as feature wall" },
-            { value: "premium", label: "Premium", "sublabel": "Floor to ceiling tiles" }
-        ], width: "full"},
-        { id: "include_tiles", label: "Would you like for the tiles to be included in the estimate? *", type: "radio_toggle", options: [
-            { value: "no", label: "No, thank you", "sublabel": "I will supply my own tiles" },
-            { value: "yes", label: "Yes, please!", "sublabel": "Include in the estimate" }
-        ], width: "full"}
-      ]
-    },
-    {
-      step: 5,
-      title: "Structural Changes",
-      fields: [
-        { id: "toilet_move", label: "Will the toilet stay where it is, or be moved? *", type: "radio", options: [
-            { value: "stay", label: "Toilet will remain the same location" },
-            { value: "move", label: "Toilet will change location", "sublabel": "Moving plumbing may affect estimate accuracy and require additional consultation." }
-        ], width: "full"},
-        { id: "wall_change", label: "Will you be knocking down or shifting a wall? *", type: "radio", options: [
-            { value: "no", label: "No" },
-            { value: "yes", label: "Yes", "sublabel": "Structural changes may require additional permits and engineering consultation." }
-        ], width: "full"}
-      ]
-    },
-    {
-      step: 6,
       title: "Photo/Video Upload",
       fields: [
-        { id: "file_upload", label: "Please upload your photos/video (max 10 photos, no larger than 20MB per file)", type: "file_drop", width: "full" }
+        { id: "file_upload", label: "Please upload your photos/video (max 5 files, no larger than 20MB per file)", type: "file_drop", width: "full" }
       ]
     }
   ],
-  submit_button_text: "Get My Estimate"
+  submit_button_text: "Send details to builder"
 };
 
 const SurveyStep = ({ step, title, children }) => (
@@ -122,12 +107,30 @@ const ClientSurveyPage = () => {
         surveyConfig.steps.forEach(step => {
           step.fields.forEach(field => {
             if (field.type === 'radio_toggle') initialData[field.id] = field.options[0].value;
-            else if (field.type === 'radio') initialData[field.id] = null;
+            else if (field.type === 'radio') initialData[field.id] = '';
+            else if (field.type === 'select') initialData[field.id] = '';
             else initialData[field.id] = '';
           });
         });
         return initialData;
     });
+
+    // Calculate areas based on dimensions
+    const calculatedAreas = useMemo(() => {
+      const floorLength = parseFloat(formData.floorLength) || 0;
+      const floorWidth = parseFloat(formData.floorWidth) || 0;
+      const wallHeight = parseFloat(formData.wallHeight) || 0;
+
+      const floorArea = floorLength * floorWidth;
+      const wallArea = 2 * (floorLength * wallHeight) + 2 * (floorWidth * wallHeight);
+      const totalArea = floorArea + wallArea;
+
+      return {
+        floorArea: floorArea.toFixed(2),
+        wallArea: wallArea.toFixed(2),
+        totalArea: totalArea.toFixed(2),
+      };
+    }, [formData.floorLength, formData.floorWidth, formData.wallHeight]);
 
   const surveyLink = useMemo(() => {
     if (!builder?.surveySlug) return '';
@@ -182,10 +185,36 @@ const ClientSurveyPage = () => {
         {(() => {
           switch (field.type) {
             case 'text':
+            case 'email':
               return (
                 <div>
                   <Label htmlFor={field.id} className="font-semibold text-gray-700">{field.label}</Label>
-                  <Input id={field.id} type="text" placeholder={field.placeholder} value={formData[field.id]} onChange={(e) => handleInputChange(field.id, e.target.value)} className="mt-1" />
+                  <Input 
+                    id={field.id} 
+                    type={field.type} 
+                    placeholder={field.placeholder} 
+                    value={formData[field.id]} 
+                    onChange={(e) => handleInputChange(field.id, e.target.value)} 
+                    className="mt-1"
+                    required={field.label.includes('*')}
+                  />
+                </div>
+              );
+            case 'number':
+              return (
+                <div>
+                  <Label htmlFor={field.id} className="font-semibold text-gray-700">{field.label}</Label>
+                  <Input 
+                    id={field.id} 
+                    type="number" 
+                    min="0"
+                    step="0.1"
+                    placeholder={field.placeholder} 
+                    value={formData[field.id]} 
+                    onChange={(e) => handleInputChange(field.id, e.target.value)} 
+                    className="mt-1"
+                    required={field.label.includes('*')}
+                  />
                 </div>
               );
             case 'radio_toggle':
@@ -199,22 +228,57 @@ const ClientSurveyPage = () => {
               return (
                 <div>
                   <Label className="font-semibold text-gray-700">{field.label}</Label>
-                  <RadioGroup value={formData[field.id]} onValueChange={(value) => handleInputChange(field.id, value)} className="mt-2 space-y-3">
+                  <div className="mt-2 space-y-2">
                     {field.options.map((option, index) => {
                       const optionValue = typeof option === 'string' ? option : option.value;
                       const optionLabel = typeof option === 'string' ? option : option.label;
                       const optionSublabel = typeof option === 'string' ? null : option.sublabel;
                       return (
-                        <Label key={index} htmlFor={`${field.id}_${index}`} className="flex items-start p-4 border border-gray-200 rounded-lg cursor-pointer has-[:checked]:border-orange-500 has-[:checked]:bg-orange-50 transition-colors">
-                          <RadioGroupItem value={optionValue} id={`${field.id}_${index}`} />
-                          <div className="ml-3 -mt-1">
-                            <span className="font-medium text-gray-800">{optionLabel}</span>
+                        <label
+                          key={index}
+                          htmlFor={`${field.id}_${index}`}
+                          className={`flex items-start space-x-3 rounded-lg border border-gray-200 p-3 cursor-pointer has-[:checked]:border-orange-500 transition-colors ${
+                            formData[field.id] === optionValue ? 'border-orange-500 bg-orange-50' : ''
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            className="mt-1 accent-orange-500"
+                            id={`${field.id}_${index}`}
+                            name={field.id}
+                            value={optionValue}
+                            checked={formData[field.id] === optionValue}
+                            onChange={() => handleInputChange(field.id, optionValue)}
+                            required={field.label.includes('*')}
+                          />
+                          <div>
+                            <p className="font-medium text-gray-900">{optionLabel}</p>
                             {optionSublabel && <p className="text-sm text-muted-foreground">{optionSublabel}</p>}
                           </div>
-                        </Label>
+                        </label>
                       );
                     })}
-                  </RadioGroup>
+                  </div>
+                </div>
+              );
+            case 'select':
+              return (
+                <div>
+                  <Label htmlFor={field.id} className="font-semibold text-gray-700">{field.label}</Label>
+                  <select
+                    id={field.id}
+                    className="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-2"
+                    value={formData[field.id]}
+                    onChange={(e) => handleInputChange(field.id, e.target.value)}
+                    required={field.label.includes('*')}
+                  >
+                    <option value="">Select one</option>
+                    {field.options.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               );
             case 'file_drop':
@@ -284,11 +348,54 @@ const ClientSurveyPage = () => {
           </Card>
 
           <form onSubmit={handleSubmit} className="space-y-8">
-            {surveyConfig.steps.map(step => (
+            {surveyConfig.steps.map(step => {
+              // Special handling for measurements step to show calculations
+              if (step.step === 2) {
+                return (
+                  <div key={step.step} className="border border-gray-200 rounded-lg p-6">
+                    <div className="flex items-start mb-6">
+                      <div className="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-full bg-orange-500 text-white font-bold mr-4">
+                        {step.step}
+                      </div>
+                      <h2 className="text-2xl font-semibold text-gray-800 pt-1">{step.title}</h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {step.fields.map(field => renderField(field))}
+                    </div>
+                    <div className="mt-6">
+                      <h4 className="text-base font-semibold text-gray-900 mb-4">
+                        Calculated Measurements
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                          <div className="text-2xl font-bold text-blue-600">
+                            {calculatedAreas.floorArea} m²
+                          </div>
+                          <div className="text-sm text-gray-600 mt-1">Floor Area</div>
+                        </div>
+                        <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                          <div className="text-2xl font-bold text-blue-600">
+                            {calculatedAreas.wallArea} m²
+                          </div>
+                          <div className="text-sm text-gray-600 mt-1">Wall Area</div>
+                        </div>
+                        <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                          <div className="text-2xl font-bold text-blue-600">
+                            {calculatedAreas.totalArea} m²
+                          </div>
+                          <div className="text-sm text-gray-600 mt-1">Total Area</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+              return (
                 <SurveyStep key={step.step} step={step.step} title={step.title}>
-                    {step.fields.map(field => renderField(field))}
+                  {step.fields.map(field => renderField(field))}
                 </SurveyStep>
-            ))}
+              );
+            })}
             <div className="text-center pt-6">
                 <Button type="submit" size="lg" className="bg-orange-500 hover:bg-orange-600 w-full sm:w-auto" disabled>
                     <Check className="mr-2 h-5 w-5" />

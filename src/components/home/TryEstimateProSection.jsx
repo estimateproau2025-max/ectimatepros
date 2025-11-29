@@ -32,7 +32,7 @@ const TryEstimateProSection = () => {
             </p>
           </div>
           <Button 
-            onClick={() => navigate('/auth')}
+            onClick={() => navigate('/auth?tab=signup')}
             className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 text-lg"
           >
             Start Free Trial

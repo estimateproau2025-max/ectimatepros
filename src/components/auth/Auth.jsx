@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,6 +16,8 @@ import { Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 export function Auth() {
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState("login");
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
 
@@ -27,6 +29,13 @@ export function Auth() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { signup, login } = useAuth();
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab === "signup") {
+      setActiveTab("signup");
+    }
+  }, [searchParams]);
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -78,7 +87,7 @@ export function Auth() {
   };
 
   return (
-    <Tabs defaultValue="login" className="w-full max-w-md">
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-md">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="login">Login</TabsTrigger>
         <TabsTrigger value="signup">Sign Up</TabsTrigger>
@@ -95,7 +104,7 @@ export function Auth() {
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="login-email">Email</Label>
-                <Input id="login-email" type="email" placeholder="m@example.com" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required />
+                <Input id="login-email" type="email" placeholder="" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="login-password">Password</Label>
@@ -120,11 +129,11 @@ export function Auth() {
             <form onSubmit={handleSignUp} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="signup-name">Full Name</Label>
-                <Input id="signup-name" placeholder="John Doe" value={signUpFullName} onChange={(e) => setSignUpFullName(e.target.value)} required />
+                <Input id="signup-name" placeholder="" value={signUpFullName} onChange={(e) => setSignUpFullName(e.target.value)} required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="signup-email">Email</Label>
-                <Input id="signup-email" type="email" placeholder="m@example.com" value={signUpEmail} onChange={(e) => setSignUpEmail(e.target.value)} required />
+                <Input id="signup-email" type="email" placeholder="" value={signUpEmail} onChange={(e) => setSignUpEmail(e.target.value)} required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="signup-password">Password</Label>

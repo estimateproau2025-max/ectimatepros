@@ -136,7 +136,7 @@ const PrivacyPolicyPage = () => {
               You may request access to or correction of your personal data by contacting us at:
             </p>
             <div className="my-3 p-3 bg-orange-50 border border-orange-200 rounded-md text-center">
-              <span className="text-orange-700 font-medium">[Insert your contact email]</span>
+              <span className="text-orange-700 font-medium">support@estimatepro.com.au</span>
             </div>
           </Section>
 
@@ -146,11 +146,11 @@ const PrivacyPolicyPage = () => {
             </p>
           </Section>
           
-          <div className="mt-12 text-center">
+          {/* <div className="mt-12 text-center">
              <a href="mailto:[Insert your contact email]" className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-orange-500 hover:bg-orange-600">
                 <Mail className="w-5 h-5 mr-2" /> Contact Us About Privacy
             </a>
-          </div>
+          </div> */}
 
         </div>
       </motion.div>

@@ -43,8 +43,6 @@ const defaultFormState = {
   clientName: "",
   clientEmail: "",
   clientPhone: "",
-  measurementMode: "total",
-  totalArea: "",
   floorLength: "",
   floorWidth: "",
   wallHeight: "",
@@ -70,6 +68,23 @@ const PublicSurveyPage = () => {
     if (!builder) return "Bathroom Estimate Request";
     return `${builder.businessName} • Bathroom Estimate Request`;
   }, [builder]);
+
+  // Calculate areas based on dimensions
+  const calculatedAreas = useMemo(() => {
+    const floorLength = parseFloat(formData.floorLength) || 0;
+    const floorWidth = parseFloat(formData.floorWidth) || 0;
+    const wallHeight = parseFloat(formData.wallHeight) || 0;
+
+    const floorArea = floorLength * floorWidth;
+    const wallArea = 2 * (floorLength * wallHeight) + 2 * (floorWidth * wallHeight);
+    const totalArea = floorArea + wallArea;
+
+    return {
+      floorArea: floorArea.toFixed(2),
+      wallArea: wallArea.toFixed(2),
+      totalArea: totalArea.toFixed(2),
+    };
+  }, [formData.floorLength, formData.floorWidth, formData.wallHeight]);
 
   useEffect(() => {
     const fetchBuilder = async () => {
@@ -172,16 +187,12 @@ const PublicSurveyPage = () => {
       designStyle: formData.designStyle,
       homeAgeCategory: formData.homeAgeCategory,
       photoUrls: media.filter((item) => item.url).map((item) => item.url),
+      floorLength: formData.floorLength,
+      floorWidth: formData.floorWidth,
+      wallHeight: formData.wallHeight,
     };
     if (formData.clientEmail) {
       payload.clientEmail = formData.clientEmail;
-    }
-    if (formData.measurementMode === "total") {
-      payload.totalArea = formData.totalArea;
-    } else {
-      payload.floorLength = formData.floorLength;
-      payload.floorWidth = formData.floorWidth;
-      payload.wallHeight = formData.wallHeight;
     }
     return payload;
   };
@@ -193,14 +204,7 @@ const PublicSurveyPage = () => {
     if (!formData.tilingLevel || !formData.homeAgeCategory) {
       return false;
     }
-    if (formData.measurementMode === "total" && !formData.totalArea) {
-      return false;
-    }
-
-    if (
-      formData.measurementMode === "dimensions" &&
-      (!formData.floorLength || !formData.floorWidth || !formData.wallHeight)
-    ) {
+    if (!formData.floorLength || !formData.floorWidth || !formData.wallHeight) {
       return false;
     }
     return true;
@@ -312,7 +316,7 @@ const PublicSurveyPage = () => {
                         onChange={(e) =>
                           handleInputChange("clientName", e.target.value)
                         }
-                        placeholder="Jane Builder"
+                        // placeholder="Jane Builder"
                         required
                       />
                     </div>
@@ -324,7 +328,7 @@ const PublicSurveyPage = () => {
                         onChange={(e) =>
                           handleInputChange("clientEmail", e.target.value)
                         }
-                        placeholder="you@email.com"
+                        // placeholder="you@email.com"
                       />
                     </div>
                     <div>
@@ -346,106 +350,76 @@ const PublicSurveyPage = () => {
                     <Ruler className="h-5 w-5 text-orange-500" /> Measurements
                   </h3>
                   <div className="grid grid-cols-1 gap-6">
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">
-                        How would you like to share measurements?
-                      </Label>
-                      <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <Button
-                          type="button"
-                          variant={
-                            formData.measurementMode === "total"
-                              ? "default"
-                              : "outline"
-                          }
-                          className={
-                            formData.measurementMode === "total"
-                              ? "bg-orange-500 hover:bg-orange-600"
-                              : ""
-                          }
-                          onClick={() => handleInputChange("measurementMode", "total")}
-                        >
-                          Provide total m²
-                        </Button>
-                        <Button
-                          type="button"
-                          variant={
-                            formData.measurementMode === "dimensions"
-                              ? "default"
-                              : "outline"
-                          }
-                          className={
-                            formData.measurementMode === "dimensions"
-                              ? "bg-orange-500 hover:bg-orange-600"
-                              : ""
-                          }
-                          onClick={() =>
-                            handleInputChange("measurementMode", "dimensions")
-                          }
-                        >
-                          I&apos;ll enter each dimension
-                        </Button>
-                      </div>
-                    </div>
-
-                    {formData.measurementMode === "total" ? (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
-                        <Label>Total area (m²) *</Label>
+                        <Label>Floor Length (m) *</Label>
                         <Input
                           type="number"
                           min="0"
                           step="0.1"
-                          value={formData.totalArea}
+                          value={formData.floorLength}
                           onChange={(e) =>
-                            handleInputChange("totalArea", e.target.value)
+                            handleInputChange("floorLength", e.target.value)
                           }
-                          placeholder="e.g. 18"
+                          placeholder="e.g., 3.5"
                           required
                         />
                       </div>
-                    ) : (
+                      <div>
+                        <Label>Floor Width (m) *</Label>
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.1"
+                          value={formData.floorWidth}
+                          onChange={(e) =>
+                            handleInputChange("floorWidth", e.target.value)
+                          }
+                          placeholder="e.g., 2.8"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label>Wall Height (m) *</Label>
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.1"
+                          value={formData.wallHeight}
+                          onChange={(e) =>
+                            handleInputChange("wallHeight", e.target.value)
+                          }
+                          placeholder="e.g., 2.4"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mt-4">
+                      <h4 className="text-base font-semibold text-gray-900 mb-4">
+                        Calculated Measurements
+                      </h4>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          <Label>Floor length (m) *</Label>
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.1"
-                            value={formData.floorLength}
-                            onChange={(e) =>
-                              handleInputChange("floorLength", e.target.value)
-                            }
-                            required
-                          />
+                        <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                          <div className="text-2xl font-bold text-blue-600">
+                            {calculatedAreas.floorArea} m²
+                          </div>
+                          <div className="text-sm text-gray-600 mt-1">Floor Area</div>
                         </div>
-                        <div>
-                          <Label>Floor width (m) *</Label>
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.1"
-                            value={formData.floorWidth}
-                            onChange={(e) =>
-                              handleInputChange("floorWidth", e.target.value)
-                            }
-                            required
-                          />
+                        <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                          <div className="text-2xl font-bold text-blue-600">
+                            {calculatedAreas.wallArea} m²
+                          </div>
+                          <div className="text-sm text-gray-600 mt-1">Wall Area</div>
                         </div>
-                        <div>
-                          <Label>Wall height (m) *</Label>
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.1"
-                            value={formData.wallHeight}
-                            onChange={(e) =>
-                              handleInputChange("wallHeight", e.target.value)
-                            }
-                            required
-                          />
+                        <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                          <div className="text-2xl font-bold text-blue-600">
+                            {calculatedAreas.totalArea} m²
+                          </div>
+                          <div className="text-sm text-gray-600 mt-1">Total Area</div>
                         </div>
                       </div>
-                    )}
+                    </div>
                   </div>
                 </section>
 
