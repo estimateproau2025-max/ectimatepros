@@ -37,7 +37,11 @@ const surveyConfig = {
       fields: [
         { id: "clientName", label: "Your Name *", type: "text", placeholder: "" },
         { id: "clientEmail", label: "Email", type: "email", placeholder: "" },
-        { id: "clientPhone", label: "Phone *", type: "text", placeholder: "04xx xxx xxx" }
+        { id: "clientPhone", label: "Phone *", type: "text", placeholder: "04xx xxx xxx" },
+        { id: "Suburb", label: "Phone *", type: "text", placeholder: "Suburb" }
+
+        
+        
       ]
     },
     {

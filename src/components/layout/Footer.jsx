@@ -28,44 +28,21 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between gap-8">
           <div>
-            <Link to="/" className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">E</span>
-              </div>
-              <span className="text-xl font-bold">EstiMate Pro</span>
-            </Link>
+          <Link to="/" className="flex items-center space-x-2 mb-4">
+  <img
+    src="/WhatsApp Image 2025-11-30 at 12.32.55 AM.jpeg"
+    alt="Logo"
+    className="w-8 h-8 rounded-lg object-cover"
+  />
+  <span className="text-xl font-bold">EstiMate Pro</span>
+</Link>
+
             <p className="text-gray-400 text-sm">
             EstiMate Pro helps save time and win more work by streamlining the quoting process            </p>
-            {/* <div className="flex space-x-2 mt-4">
-                {['F', 'T', 'L', 'I'].map(letter => (
-                    <button key={letter} onClick={() => handleFeatureClick(`Social ${letter}`)} className="w-8 h-8 bg-gray-700 hover:bg-orange-500 rounded flex items-center justify-center text-sm font-medium">
-                        {letter}
-                    </button>
-                ))}
-            </div> */}
+       
           </div>
           
-          {/* <div>
-            <p className="font-semibold mb-4 text-gray-200">Product</p>
-            <div className="space-y-2">
-              {[ "Features", "Pricing", "Templates", "Integrations", "API"].map(item => (
-                <button key={item} onClick={() => handleFeatureClick(item)} className="block text-gray-400 hover:text-white transition-colors text-sm">
-                  {item}
-                </button>
-              ))}
-            </div>
-          </div> */}
-          
-          {/* <div>
-            <p className="font-semibold mb-4 text-gray-200">Company</p>
-            <div className="space-y-2">
-                {["About Us", "Careers", "Blog", "Press", "Partners"].map(item => (
-                    <button key={item} onClick={() => handleFeatureClick(item)} className="block text-gray-400 hover:text-white transition-colors text-sm">
-                        {item}
-                    </button>
-                ))}
-            </div>
-          </div> */}
+       
 
           <div className="text-right md:text-left">
             <p className="font-semibold mb-4 text-gray-200">Contact Us</p>

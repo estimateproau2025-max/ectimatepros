@@ -43,6 +43,7 @@ const defaultFormState = {
   clientName: "",
   clientEmail: "",
   clientPhone: "",
+  clientSuburb: "",
   floorLength: "",
   floorWidth: "",
   wallHeight: "",
@@ -182,6 +183,8 @@ const PublicSurveyPage = () => {
     const payload = {
       clientName: formData.clientName,
       clientPhone: formData.clientPhone,
+      clientSuburb: formData.clientSuburb,
+
       bathroomType: formData.bathroomType,
       tilingLevel: formData.tilingLevel,
       designStyle: formData.designStyle,
@@ -339,6 +342,17 @@ const PublicSurveyPage = () => {
                           handleInputChange("clientPhone", e.target.value)
                         }
                         placeholder="04xx xxx xxx"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label>Suburb *</Label>
+                      <Input
+                        value={formData.clientSuburb}
+                        onChange={(e) =>
+                          handleInputChange("clientSuburb", e.target.value)
+                        }
+                        placeholder="Suburb"
                         required
                       />
                     </div>
