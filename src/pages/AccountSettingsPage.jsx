@@ -296,7 +296,7 @@ const AccountSettingsPage = () => {
             </CardContent>
           </Card>
 
-          {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <Card>
               <CardHeader><CardTitle>Billing & Subscription</CardTitle><CardDescription>Manage your payment details and subscription plan.</CardDescription></CardHeader>
               <CardContent className="space-y-4">
@@ -345,7 +345,7 @@ const AccountSettingsPage = () => {
                   </div>
               </CardContent>
             </Card>
-          </div> */}
+          </div>
         </div>
       </motion.div>
     </>
