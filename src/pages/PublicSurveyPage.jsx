@@ -34,8 +34,23 @@ const homeAgeOptions = [
   "Not sure",
 ];
 
+const tilesSupplyOptions = [
+  { value: "no_supply_own", label: "No, thank you", sublabel: "I will supply my own tiles" },
+  { value: "yes_include", label: "Yes, please!", sublabel: "Include in the estimate" }
+];
+
+const toiletOptions = [
+  { value: "same_location", label: "Toilet will remain the same location" },
+  { value: "change_location", label: "Toilet will change location" }
+];
+
+const wallOptions = [
+  { value: "no", label: "No" },
+  { value: "yes", label: "Yes" }
+];
+
 const MAX_FILES = 5;
-const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_CLOUD_NAME = "dgmjg9zr4";
 const CLOUDINARY_UPLOAD_PRESET =
   import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "gptimages";
 
@@ -118,9 +133,9 @@ const PublicSurveyPage = () => {
   };
 
   const uploadFileToCloudinary = async (file) => {
-    if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
-      throw new Error("Cloudinary configuration missing");
-    }
+    // if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
+    //   throw new Error("Cloudinary configuration missing");
+    // }
     const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`;
     const form = new FormData();
     form.append("file", file);
@@ -501,6 +516,40 @@ const PublicSurveyPage = () => {
                     </div>
                   </div>
 
+                  <div className="mt-6">
+                    <Label>Would you like for the tiles to be included in the estimate? *</Label>
+                    <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {tilesSupplyOptions.map((option) => (
+                        <label
+                          key={option.value}
+                          className={`flex flex-col items-start p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                            formData.tilesSupply === option.value
+                              ? "border-orange-500 bg-orange-50"
+                              : "border-gray-200 bg-white hover:border-gray-300"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <div className="text-sm font-semibold">{option.label}</div>
+                            <input
+                              type="radio"
+                              className="accent-orange-500"
+                              checked={formData.tilesSupply === option.value}
+                              onChange={() =>
+                                handleInputChange("tilesSupply", option.value)
+                              }
+                              required
+                            />
+                          </div>
+                          {option.sublabel && (
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {option.sublabel}
+                            </div>
+                          )}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <div>
                       <Label>Age of home *</Label>
@@ -529,6 +578,65 @@ const PublicSurveyPage = () => {
                           handleInputChange("designStyle", e.target.value)
                         }
                       />
+                    </div>
+                  </div>
+                </section>
+
+                <section>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <Home className="h-5 w-5 text-orange-500" /> Structural Changes
+                  </h3>
+                  <div className="space-y-6">
+                    <div>
+                      <Label>Will the toilet stay where it is, or be moved? *</Label>
+                      <div className="mt-2 space-y-2">
+                        {toiletOptions.map((option) => (
+                          <label
+                            key={option.value}
+                            className="flex items-center space-x-3 rounded-lg border border-gray-200 p-3 cursor-pointer has-[:checked]:border-orange-500"
+                          >
+                            <input
+                              type="radio"
+                              className="accent-orange-500"
+                              checked={formData.toiletLocation === option.value}
+                              onChange={() =>
+                                handleInputChange("toiletLocation", option.value)
+                              }
+                              required
+                            />
+                            <span>{option.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2 flex items-start gap-1">
+                        <span className="inline-block mt-0.5">ⓘ</span> Moving plumbing may affect estimate accuracy and require additional consultation.
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label>Will you be knocking down or shifting a wall? *</Label>
+                      <div className="mt-2 space-y-2">
+                        {wallOptions.map((option) => (
+                          <label
+                            key={option.value}
+                            className="flex items-center space-x-3 rounded-lg border border-gray-200 p-3 cursor-pointer has-[:checked]:border-orange-500"
+                          >
+                            <input
+                              type="radio"
+                              className="accent-orange-500"
+                              checked={formData.wallChanges === option.value}
+                              onChange={() =>
+                                handleInputChange("wallChanges", option.value)
+                              }
+                              required
+                            />
+                            <span>{option.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2 flex items-start gap-1">
+                        <span className="inline-block mt-0.5">ⓘ</span> Structural changes may require additional permits and engineering consultation.
+                      </p>
                     </div>
                   </div>
                 </section>
