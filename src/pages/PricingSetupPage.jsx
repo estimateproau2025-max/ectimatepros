@@ -52,7 +52,7 @@ const PricingSetupPage = () => {
     { category: "Finishes & Builder's labour", itemName: "Gap filling & painting", estimateOptions: "All estimates", priceType: "Fixed price estimate", price: "", isHeader: false },
     { category: "Finishes & Builder's labour", itemName: "Builder's labour, project management & administration costs", estimateOptions: "All estimates", priceType: "% of all above line items", price: "", isHeader: false },
     { category: "Finishes & Builder's labour", itemName: "Access/difficult site fee", estimateOptions: "If client selects lives in apartment", priceType: "% margin of all above line items", price: "", isHeader: false },
-    { category: "Finishes & Builder's labour", itemName: "Gap filling & painting", estimateOptions: "All estimates", priceType: "Fixed price estimate per room", price: "", isHeader: false },
+    // { category: "Finishes & Builder's labour", itemName: "Gap filling & painting", estimateOptions: "All estimates", priceType: "Fixed price estimate per room", price: "", isHeader: false },
     { category: "Finishes & Builder's labour", itemName: "Builder's labour for knocking down/shift wall", estimateOptions: "If customer selects yes to changes to wall layout", priceType: "Fixed price estimate", price: "", isHeader: false },
   ];
 
@@ -182,30 +182,55 @@ const PricingSetupPage = () => {
 
         <div className="space-y-6">
           <Card>
-            <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
+            <CardHeader>
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-4">
                 <CardTitle>Pricing Setup</CardTitle>
-                <p className="text-sm text-muted-foreground pt-1">
-                  Enter your prices for each item. Columns A, B, and C are fixed and cannot be changed.
-                </p>
+                <Button
+                  className="bg-orange-500 hover:bg-orange-600 shrink-0"
+                  onClick={handleSavePricingTable}
+                  disabled={tableSaving}
+                >
+                  {tableSaving ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="mr-2 h-4 w-4" />
+                      Save Pricing
+                    </>
+                  )}
+                </Button>
               </div>
-              <Button
-                className="bg-orange-500 hover:bg-orange-600"
-                onClick={handleSavePricingTable}
-                disabled={tableSaving}
-              >
-                {tableSaving ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <Save className="mr-2 h-4 w-4" />
-                    Save Pricing
-                  </>
-                )}
-              </Button>
+              <div className="text-sm text-muted-foreground space-y-3">
+                <p>
+                  Look back at a few past bathroom quotes to help guide your pricing or your Excel pricing set up.
+                </p>
+                <p>
+                  A good starting point is the average amount you've charged for similar items across 3–4 typical bathroom renos.
+                </p>
+                <div>
+                  <p className="font-semibold text-gray-900 mb-2">How it works:</p>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    <li>You'll enter your price (including your margin) for each job item.</li>
+                    <li>When a client fills out the survey, EstiMate Pro will calculate an estimate based on your pricing. This estimate will only be visible to you in your dashboard.</li>
+                    <li>To give you a realistic quote range, EstiMate Pro calculates:</li>
+                    <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
+                      <li>Low estimate = based on your price</li>
+                      <li>High estimate = your price + 30% (as a buffer for unknowns or variation)</li>
+                    </ul>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900 mb-2">How to fill your pricing template in:</p>
+                  <p className="mb-1">In the "Enter your price (including margin)" column:</p>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    <li>Enter a fixed price or $ per m², depending on what the row says.</li>
+                    <li>If a line says "if customer selects…" – price what you'd usually charge when that situation applies (e.g. layout change, niche, apartment access).</li>
+                  </ul>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">

@@ -458,6 +458,19 @@ const PublicSurveyPage = () => {
                         </div>
                       </div>
                     </div>
+
+                    <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                      <h4 className="text-sm font-semibold text-gray-900 mb-2">
+                        Estimate Calculation
+                      </h4>
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <p>Your builder will calculate estimates based on:</p>
+                        <ul className="list-disc list-inside ml-2 space-y-1">
+                          <li>Base estimate = Sum of all applicable line items</li>
+                          <li>High estimate = Base estimate × 1.30</li>
+                        </ul>
+                      </div>
+                    </div>
                   </div>
                 </section>
 

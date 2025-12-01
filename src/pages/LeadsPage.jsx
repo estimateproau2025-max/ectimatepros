@@ -258,6 +258,12 @@ const LeadsPage = () => {
                         {selectedLead.clientEmail}
                       </div>
                     )}
+                    {selectedLead.clientSuburb && (
+                      <div className="flex items-center gap-2 text-gray-700">
+                        <span className="text-muted-foreground">📍</span>
+                        {selectedLead.clientSuburb}
+                      </div>
+                    )}
                     <div className="flex items-center gap-2 text-gray-700">
                       <Calendar className="h-4 w-4 text-muted-foreground" />
                       {selectedLead.submittedAt
@@ -265,6 +271,46 @@ const LeadsPage = () => {
                         : "--"}
                     </div>
                   </div>
+
+                  {(selectedLead.measurements?.floorLength || 
+                    selectedLead.measurements?.floorWidth || 
+                    selectedLead.measurements?.wallHeight) && (
+                    <div>
+                      <p className="text-xs uppercase text-muted-foreground mb-1">
+                        Measurements
+                      </p>
+                      <div className="text-sm space-y-1">
+                        {selectedLead.measurements?.floorLength && (
+                          <p>Floor Length: {selectedLead.measurements.floorLength} m</p>
+                        )}
+                        {selectedLead.measurements?.floorWidth && (
+                          <p>Floor Width: {selectedLead.measurements.floorWidth} m</p>
+                        )}
+                        {selectedLead.measurements?.wallHeight && (
+                          <p>Wall Height: {selectedLead.measurements.wallHeight} m</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedLead.calculatedAreas && (
+                    <div>
+                      <p className="text-xs uppercase text-muted-foreground mb-1">
+                        Calculated Measurements
+                      </p>
+                      <div className="text-sm space-y-1">
+                        {selectedLead.calculatedAreas.floorArea && (
+                          <p>Floor Area: {selectedLead.calculatedAreas.floorArea.toFixed(2)} m²</p>
+                        )}
+                        {selectedLead.calculatedAreas.wallArea && (
+                          <p>Wall Area: {selectedLead.calculatedAreas.wallArea.toFixed(2)} m²</p>
+                        )}
+                        {selectedLead.calculatedAreas.totalArea && (
+                          <p>Total Area: {selectedLead.calculatedAreas.totalArea.toFixed(2)} m²</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   <div>
                     <p className="text-xs uppercase text-muted-foreground mb-1">
@@ -277,6 +323,53 @@ const LeadsPage = () => {
                       Home age: {selectedLead.homeAgeCategory || "Unknown"}
                     </p>
                   </div>
+
+                  {selectedLead.tilesSupply && (
+                    <div>
+                      <p className="text-xs uppercase text-muted-foreground mb-1">
+                        Tiles to be included
+                      </p>
+                      <p className="text-sm text-gray-700">
+                        {selectedLead.tilesSupply === "yes_include" 
+                          ? "Yes, please! Include in the estimate" 
+                          : selectedLead.tilesSupply === "no_supply_own"
+                          ? "No, thank you - I will supply my own tiles"
+                          : selectedLead.tilesSupply}
+                      </p>
+                    </div>
+                  )}
+
+                  {(selectedLead.toiletLocation || selectedLead.wallChanges) && (
+                    <div>
+                      <p className="text-xs uppercase text-muted-foreground mb-1">
+                        Structural Changes
+                      </p>
+                      <div className="text-sm space-y-1">
+                        {selectedLead.toiletLocation && (
+                          <p>
+                            Toilet location: {
+                              selectedLead.toiletLocation === "same_location"
+                                ? "Toilet will remain the same location"
+                                : selectedLead.toiletLocation === "change_location"
+                                ? "Toilet will change location"
+                                : selectedLead.toiletLocation
+                            }
+                          </p>
+                        )}
+                        {selectedLead.wallChanges && (
+                          <p>
+                            Wall changes: {
+                              selectedLead.wallChanges === "yes"
+                                ? "Yes - knocking down or shifting a wall"
+                                : selectedLead.wallChanges === "no"
+                                ? "No"
+                                : selectedLead.wallChanges
+                            }
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {selectedLead.designStyle && (
                     <div>
