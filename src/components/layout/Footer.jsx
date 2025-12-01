@@ -56,6 +56,10 @@ const Footer = () => {
             <p className="text-gray-500 text-sm">
             © 2025 EstiMate Pro. All rights reserved.
             </p>
+            <div className="flex space-x-4 mt-4 sm:mt-0">
+                <button onClick={() => handleFeatureClick('Privacy Policy', '/privacy-policy')} className="text-gray-400 hover:text-white transition-colors text-sm">Privacy Policy</button>
+                <button onClick={() => handleFeatureClick('Terms of Service', '/terms-of-service')} className="text-gray-400 hover:text-white transition-colors text-sm">Terms of Service</button>
+             </div>
         </div>
       </div>
     </footer>

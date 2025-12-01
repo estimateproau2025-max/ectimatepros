@@ -284,7 +284,7 @@ const DashboardPage = () => {
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900">Welcome back, {builderName}!</h1>
         </div>
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-6">{statsCards.map((stat, index) => (<StatCard key={index} {...stat} />))}</div>
+        image.png  {/* <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-6">{statsCards.map((stat, index) => (<StatCard key={index} {...stat} />))}</div> */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
           <Card className="col-span-1 lg:col-span-2">
             <CardHeader><CardTitle>Lead Generation Tools</CardTitle></CardHeader>
@@ -292,7 +292,7 @@ const DashboardPage = () => {
               <p className="text-sm text-muted-foreground">Generate a unique link to your estimate form or test your current pricing setup.</p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button onClick={generateLink} className="bg-orange-500 hover:bg-orange-600 text-white"><LinkIcon className="mr-2 h-4 w-4" /> {estimateLink ? 'Copy Link' : 'Generate Link'}</Button>
-                <Button onClick={testEstimateTool} variant="outline"><Wrench className="mr-2 h-4 w-4" /> Test Tool</Button>
+                {/* <Button onClick={testEstimateTool} variant="outline"><Wrench className="mr-2 h-4 w-4" /> Test Tool</Button> */}
               </div>
               {estimateLink && (<div className="mt-4 p-3 bg-gray-100 rounded-md text-sm break-words"><p className="font-medium text-gray-800">Your Link:</p><a href={estimateLink} target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:underline">{estimateLink}</a></div>)}
             </CardContent>

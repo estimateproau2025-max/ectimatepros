@@ -49,6 +49,9 @@ const defaultFormState = {
   wallHeight: "",
   bathroomType: "",
   tilingLevel: "",
+  tilesSupply: "",
+  toiletLocation: "",
+  wallChanges: "",
   designStyle: "",
   homeAgeCategory: "",
 };
@@ -187,6 +190,9 @@ const PublicSurveyPage = () => {
 
       bathroomType: formData.bathroomType,
       tilingLevel: formData.tilingLevel,
+      tilesSupply: formData.tilesSupply,
+      toiletLocation: formData.toiletLocation,
+      wallChanges: formData.wallChanges,
       designStyle: formData.designStyle,
       homeAgeCategory: formData.homeAgeCategory,
       photoUrls: media.filter((item) => item.url).map((item) => item.url),
@@ -204,7 +210,10 @@ const PublicSurveyPage = () => {
     if (!formData.clientName || !formData.clientPhone || !formData.bathroomType) {
       return false;
     }
-    if (!formData.tilingLevel || !formData.homeAgeCategory) {
+    if (!formData.tilingLevel || !formData.homeAgeCategory || !formData.tilesSupply) {
+      return false;
+    }
+    if (!formData.toiletLocation || !formData.wallChanges) {
       return false;
     }
     if (!formData.floorLength || !formData.floorWidth || !formData.wallHeight) {

@@ -56,7 +56,14 @@ const SidebarContent = ({ onLinkClick, isAdmin }) => {
       <div className="h-16 flex items-center px-6 border-b border-gray-200">
         <a href="/" className="flex items-center">
             <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center mr-3">
-            <span className="text-white font-bold text-sm">E</span>
+            <span className="text-white font-bold text-sm">
+
+            <img
+    src="/WhatsApp Image 2025-11-30 at 12.32.55 AM.jpeg"
+    alt="Logo"
+    className="w-8 h-8 rounded-lg object-cover"
+  />
+            </span>
             </div>
             <span className="text-xl font-bold text-gray-900">EstiMate Pro</span>
         </a>

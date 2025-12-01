@@ -26,6 +26,21 @@ const homeAgeOptions = [
   "Not sure",
 ];
 
+const tilesSupplyOptions = [
+  { value: "no_supply_own", label: "No, thank you", sublabel: "I will supply my own tiles" },
+  { value: "yes_include", label: "Yes, please!", sublabel: "Include in the estimate" }
+];
+
+const toiletOptions = [
+    { value: "same_location", label: "Toilet will remain the same location" },
+    { value: "change_location", label: "Toilet will change location" }
+];
+
+const wallOptions = [
+    { value: "no", label: "No" },
+    { value: "yes", label: "Yes" }
+];
+
 const surveyConfig = {
   welcome_title: "Hi there! Welcome to EstiMate",
   welcome_subtitle: "Let's get started on your bathroom renovation estimate",
@@ -59,12 +74,21 @@ const surveyConfig = {
       fields: [
         { id: "bathroomType", label: "Bathroom location *", type: "radio", options: bathroomTypes, width: "full" },
         { id: "tilingLevel", label: "Tiling preference *", type: "radio", options: tilingLevels, width: "full" },
+        { id: "tilesSupply", label: "Would you like for the tiles to be included in the estimate? *", type: "radio_toggle", options: tilesSupplyOptions, width: "full" },
         { id: "homeAgeCategory", label: "Age of home *", type: "select", options: homeAgeOptions },
         { id: "designStyle", label: "Design notes", type: "text", placeholder: "Preferred colours, fittings, style..." }
       ]
     },
     {
       step: 4,
+      title: "Structural Changes",
+      fields: [
+        { id: "toiletLocation", label: "Will the toilet stay where it is, or be moved? *", type: "radio", options: toiletOptions, width: "full", note: "Moving plumbing may affect estimate accuracy and require additional consultation." },
+        { id: "wallChanges", label: "Will you be knocking down or shifting a wall? *", type: "radio", options: wallOptions, width: "full", note: "Structural changes may require additional permits and engineering consultation." }
+      ]
+    },
+    {
+      step: 5,
       title: "Photo/Video Upload",
       fields: [
         { id: "file_upload", label: "Please upload your photos/video (max 5 files, no larger than 20MB per file)", type: "file_drop", width: "full" }
@@ -263,6 +287,9 @@ const ClientSurveyPage = () => {
                       );
                     })}
                   </div>
+                  {field.note && <p className="text-xs text-muted-foreground mt-2 flex items-start gap-1">
+                    <span className="inline-block mt-0.5">ⓘ</span> {field.note}
+                  </p>}
                 </div>
               );
             case 'select':
