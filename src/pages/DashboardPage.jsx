@@ -131,7 +131,7 @@ const RecentLeadsTable = ({ leads, loading }) => {
                             {status}
                           </Badge>
                         </td>
-                        <td className="py-3 px-4 text-right">
+                        {/* <td className="py-3 px-4 text-right">
                           <Button
                             variant="ghost"
                             size="sm"
@@ -139,7 +139,7 @@ const RecentLeadsTable = ({ leads, loading }) => {
                           >
                             Details
                           </Button>
-                        </td>
+                        </td> */}
                       </tr>
                     );
                   })}
@@ -284,7 +284,7 @@ const DashboardPage = () => {
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900">Welcome back, {builderName}!</h1>
         </div>
-        image.png  {/* <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-6">{statsCards.map((stat, index) => (<StatCard key={index} {...stat} />))}</div> */}
+         {/* <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-6">{statsCards.map((stat, index) => (<StatCard key={index} {...stat} />))}</div> */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
           <Card className="col-span-1 lg:col-span-2">
             <CardHeader><CardTitle>Lead Generation Tools</CardTitle></CardHeader>
