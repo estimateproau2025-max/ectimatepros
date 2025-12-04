@@ -29,31 +29,32 @@ const PricingSetupPage = () => {
 
   const [pricingTable, setPricingTable] = useState([]);
 
-  // Fixed pricing table structure
+  // Fixed pricing table structure - organized by calculation type
   const defaultPricingTable = [
-    { category: "Demolition", itemName: "Demolition", estimateOptions: "", priceType: "", price: "", isHeader: true },
-    { category: "Demolition", itemName: "Demolition (labour)", estimateOptions: "All estimates", priceType: "Fixed price estimate", price: "", isHeader: false },
-    { category: "Demolition", itemName: "Waste disposal", estimateOptions: "All estimates", priceType: "Fixed price estimate", price: "", isHeader: false },
-    { category: "Plumbing", itemName: "Plumbing", estimateOptions: "", priceType: "", price: "", isHeader: true },
-    { category: "Plumbing", itemName: "Plumbing (labour) if layout stays the same", estimateOptions: "If customer selects same layout", priceType: "Fixed price estimate", price: "", isHeader: false },
-    { category: "Plumbing", itemName: "Plumbing (labour) if changes to layout", estimateOptions: "If customer selects toilet will change", priceType: "Fixed price estimate", price: "", isHeader: false },
-    { category: "Electrical", itemName: "Electrical", estimateOptions: "", priceType: "", price: "", isHeader: true },
-    { category: "Electrical", itemName: "Electrical (labour)", estimateOptions: "All estimates", priceType: "Fixed price estimate", price: "", isHeader: false },
-    { category: "Electrical", itemName: "Electrical (material)", estimateOptions: "All estimates", priceType: "Fixed price estimate", price: "", isHeader: false },
-    { category: "Tiling", itemName: "Tiling", estimateOptions: "", priceType: "", price: "", isHeader: true },
-    { category: "Tiling", itemName: "Waterproofing", estimateOptions: "All estimates", priceType: "Fixed price estimate", price: "", isHeader: false },
-    { category: "Tiling", itemName: "Tiling (labour)", estimateOptions: "All estimates", priceType: "per M2", price: "", isHeader: false },
-    { category: "Tiling", itemName: "Tiles (material)", estimateOptions: "If customer selects yes for tiles", priceType: "per M2", price: "", isHeader: false },
-    { category: "Tiling", itemName: "Niche extra cost + builder labour to frame", estimateOptions: "If customer selects yes for niche", priceType: "Fixed price estimate", price: "", isHeader: false },
-    { category: "Consumables", itemName: "Consumables", estimateOptions: "", priceType: "", price: "", isHeader: true },
-    { category: "Consumables", itemName: "Consumables: Timber, Floor Protection, plaster, insulation, caulking, cornice, fixing materials, etc", estimateOptions: "All estimates", priceType: "Fixed price estimate", price: "", isHeader: false },
-    { category: "Consumables", itemName: "Supply & installation of shower base & shower screen based on 900x900", estimateOptions: "All estimates", priceType: "Fixed price estimate", price: "", isHeader: false },
-    { category: "Finishes & Builder's labour", itemName: "Finishes & Builder's labour", estimateOptions: "", priceType: "", price: "", isHeader: true },
-    { category: "Finishes & Builder's labour", itemName: "Gap filling & painting", estimateOptions: "All estimates", priceType: "Fixed price estimate", price: "", isHeader: false },
-    { category: "Finishes & Builder's labour", itemName: "Builder's labour, project management & administration costs", estimateOptions: "All estimates", priceType: "% of all above line items", price: "", isHeader: false },
-    { category: "Finishes & Builder's labour", itemName: "Access/difficult site fee", estimateOptions: "If client selects lives in apartment", priceType: "% margin of all above line items", price: "", isHeader: false },
-    // { category: "Finishes & Builder's labour", itemName: "Gap filling & painting", estimateOptions: "All estimates", priceType: "Fixed price estimate per room", price: "", isHeader: false },
-    { category: "Finishes & Builder's labour", itemName: "Builder's labour for knocking down/shift wall", estimateOptions: "If customer selects yes to changes to wall layout", priceType: "Fixed price estimate", price: "", isHeader: false },
+    // Fixed-price items
+    { section: "Fixed-price items", itemName: "Fixed-price items", whenApplies: "", priceType: "", price: "", isSectionHeader: true },
+    { section: "Fixed-price items", itemName: "Demolition labour", whenApplies: "All estimates", priceType: "fixed", price: "", isSectionHeader: false },
+    { section: "Fixed-price items", itemName: "Waste disposal", whenApplies: "All estimates", priceType: "fixed", price: "", isSectionHeader: false },
+    { section: "Fixed-price items", itemName: "Plumbing labour (layout same)", whenApplies: "If customer selects same layout", priceType: "fixed", price: "", isSectionHeader: false },
+    { section: "Fixed-price items", itemName: "Plumbing labour (layout change)", whenApplies: "If customer selects toilet will change", priceType: "fixed", price: "", isSectionHeader: false },
+    { section: "Fixed-price items", itemName: "Electrical labour", whenApplies: "All estimates", priceType: "fixed", price: "", isSectionHeader: false },
+    { section: "Fixed-price items", itemName: "Electrical material", whenApplies: "All estimates", priceType: "fixed", price: "", isSectionHeader: false },
+    { section: "Fixed-price items", itemName: "Waterproofing", whenApplies: "All estimates", priceType: "fixed", price: "", isSectionHeader: false },
+    { section: "Fixed-price items", itemName: "Niche (fixed cost)", whenApplies: "All estimates", priceType: "fixed", price: "", isSectionHeader: false },
+    { section: "Fixed-price items", itemName: "Consumables", whenApplies: "All estimates", priceType: "fixed", price: "", isSectionHeader: false },
+    { section: "Fixed-price items", itemName: "Shower base + screen", whenApplies: "All estimates", priceType: "fixed", price: "", isSectionHeader: false },
+    { section: "Fixed-price items", itemName: "Gap filling & painting", whenApplies: "All estimates", priceType: "fixed", price: "", isSectionHeader: false },
+    { section: "Fixed-price items", itemName: "Builder labour for wall knock/shift", whenApplies: "If customer selects yes to changes to wall layout", priceType: "fixed", price: "", isSectionHeader: false },
+    
+    // Per-m² items
+    { section: "Per-m² items", itemName: "Per-m² items", whenApplies: "", priceType: "", price: "", isSectionHeader: true },
+    { section: "Per-m² items", itemName: "Tiling labour", whenApplies: "All estimates", priceType: "sqm", price: "", isSectionHeader: false },
+    { section: "Per-m² items", itemName: "Tiles material", whenApplies: "If customer selects yes for tiles", priceType: "sqm", price: "", isSectionHeader: false },
+    
+    // Percentage-based items
+    { section: "Percentage-based items", itemName: "Percentage-based items", whenApplies: "", priceType: "", price: "", isSectionHeader: true },
+    { section: "Percentage-based items", itemName: "Builder labour / PM / admin", whenApplies: "All estimates", priceType: "percentage", price: "", isSectionHeader: false },
+    { section: "Percentage-based items", itemName: "Access/difficult site fee", whenApplies: "If client selects lives in apartment", priceType: "percentage", price: "", isSectionHeader: false },
   ];
 
   const fetchPricingProfile = useCallback(async () => {
@@ -68,20 +69,35 @@ const PricingSetupPage = () => {
       
       // Map existing pricing items to the fixed table structure
       const tableData = defaultPricingTable.map((row) => {
-        if (row.isHeader) return row;
+        if (row.isSectionHeader) return row;
         
         // Find matching item from backend
         const existingItem = items.find(
-          (item) => 
-            item.itemName === row.itemName && 
-            (item.applicability === row.estimateOptions || 
-             item.applicability?.toLowerCase() === row.estimateOptions?.toLowerCase() ||
-             (!item.applicability && row.estimateOptions === "All estimates"))
+          (item) => {
+            const nameMatch = item.itemName === row.itemName || 
+              item.itemName?.toLowerCase().includes(row.itemName.toLowerCase()) ||
+              row.itemName.toLowerCase().includes(item.itemName?.toLowerCase());
+            const applicabilityMatch = item.applicability === row.whenApplies || 
+              item.applicability?.toLowerCase() === row.whenApplies?.toLowerCase() ||
+              (!item.applicability && row.whenApplies === "All estimates");
+            const priceTypeMatch = (item.priceType === row.priceType) ||
+              (item.priceType === "sqm" && row.priceType === "sqm") ||
+              (item.priceType === "percentage" && row.priceType === "percentage") ||
+              (item.priceType === "fixed" && row.priceType === "fixed");
+            
+            return nameMatch && (applicabilityMatch || !row.whenApplies) && priceTypeMatch;
+          }
         );
+        
+        const priceValue = existingItem 
+          ? (existingItem.priceType === "percentage" 
+              ? (existingItem.markupPercent || 0).toString() 
+              : (existingItem.finalPrice || 0).toString())
+          : "";
         
         return {
           ...row,
-          price: existingItem ? (existingItem.finalPrice || 0).toString() : "",
+          price: priceValue,
           id: existingItem?._id || existingItem?.id,
         };
       });
@@ -113,18 +129,14 @@ const PricingSetupPage = () => {
     try {
       // Convert table data to pricing items format
       const pricingItems = pricingTable
-        .filter((row) => !row.isHeader && row.price)
+        .filter((row) => !row.isSectionHeader && row.price)
         .map((row) => {
-          const priceType = row.priceType.includes("per M2") ? "sqm" : 
-                          row.priceType.includes("%") ? "percentage" : 
-                          "fixed";
-          
           return {
             itemName: row.itemName,
-            applicability: row.estimateOptions || "All estimates",
-            priceType: priceType,
-            finalPrice: priceType === "percentage" ? 0 : Number(row.price) || 0,
-            markupPercent: priceType === "percentage" ? Number(row.price) || 0 : 0,
+            applicability: row.whenApplies || "All estimates",
+            priceType: row.priceType,
+            finalPrice: row.priceType === "percentage" ? 0 : Number(row.price) || 0,
+            markupPercent: row.priceType === "percentage" ? Number(row.price) || 0 : 0,
             isActive: true,
             ...(row.id && { _id: row.id }),
           };
@@ -233,89 +245,111 @@ const PricingSetupPage = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm border rounded-md">
-                  <thead className="bg-gray-100 text-left">
-                    <tr>
-                      <th className="px-4 py-3 font-medium text-gray-700 border-r">
-                        Item
-                      </th>
-                      <th className="px-4 py-3 font-medium text-gray-700 border-r">
-                        Estimate options
-                      </th>
-                      <th className="px-4 py-3 font-medium text-gray-700 border-r">
-                        Price Type
-                      </th>
-                      <th className="px-4 py-3 font-medium text-gray-700">
-                        Enter your price (including margin)
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pricingTable.map((row, index) => {
-                      if (row.isHeader) {
-                        return (
-                          <tr key={`header-${index}`} className="bg-gray-50 border-t">
-                            <td colSpan={4} className="px-4 py-3 font-semibold text-gray-900">
-                              {row.itemName}
-                            </td>
-                          </tr>
-                        );
-                      }
-                      return (
-                        <tr key={`row-${index}`} className="border-t hover:bg-gray-50">
-                          <td className="px-4 py-3 text-gray-900 border-r">
-                            {row.itemName}
-                          </td>
-                          <td className="px-4 py-3 text-gray-700 border-r">
-                            {row.estimateOptions || "-"}
-                          </td>
-                          <td className="px-4 py-3 text-gray-700 border-r">
-                            {row.priceType || "-"}
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="relative">
-                              {row.priceType?.includes("%") ? (
-                                <>
-                                  <Input
-                                    type="number"
-                                    min="0"
-                                    step="0.1"
-                                    value={row.price}
-                                    onChange={(e) => handlePriceChange(index, e.target.value)}
-                                    placeholder="0"
-                                    className="pr-8"
-                                  />
-                                  <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground">
-                                    %
-                                  </span>
-                                </>
-                              ) : (
-                                <>
-                                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">
-                                    $
-                                  </span>
-                                  <Input
-                                    type="number"
-                                    min="0"
-                                    step="0.01"
-                                    value={row.price}
-                                    onChange={(e) => handlePriceChange(index, e.target.value)}
-                                    placeholder="0.00"
-                                    className="pl-7"
-                                  />
-                                </>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+              <div className="space-y-8">
+                {["Fixed-price items", "Per-m² items", "Percentage-based items"].map((sectionName) => {
+                  const sectionRows = pricingTable.filter(row => row.section === sectionName);
+                  if (sectionRows.length === 0) return null;
+                  
+                  return (
+                    <div key={sectionName} className="space-y-4">
+                      <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
+                        {sectionName}
+                      </h3>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm border rounded-md">
+                          <thead className="bg-gray-100 text-left">
+                            <tr>
+                              <th className="px-4 py-3 font-medium text-gray-700 border-r w-1/3">
+                                Item
+                              </th>
+                              <th className="px-4 py-3 font-medium text-gray-700 border-r w-1/3">
+                                When it applies
+                              </th>
+                              <th className="px-4 py-3 font-medium text-gray-700 w-1/3">
+                                Enter your price (including margin)
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {sectionRows.map((row, index) => {
+                              const globalIndex = pricingTable.findIndex(r => r === row);
+                              if (row.isSectionHeader) return null;
+                              
+                              return (
+                                <tr key={`row-${globalIndex}`} className="border-t hover:bg-gray-50">
+                                  <td className="px-4 py-3 text-gray-900 border-r">
+                                    {row.itemName}
+                                  </td>
+                                  <td className="px-4 py-3 text-gray-700 border-r">
+                                    {row.whenApplies || "All estimates"}
+                                  </td>
+                                  <td className="px-4 py-3">
+                                    <div className="relative">
+                                      {row.priceType === "percentage" ? (
+                                        <>
+                                          <Input
+                                            type="number"
+                                            min="0"
+                                            step="0.1"
+                                            value={row.price}
+                                            onChange={(e) => handlePriceChange(globalIndex, e.target.value)}
+                                            placeholder="0"
+                                            className="pr-8"
+                                          />
+                                          <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground">
+                                            %
+                                          </span>
+                                        </>
+                                      ) : row.priceType === "sqm" ? (
+                                        <>
+                                          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">
+                                            $
+                                          </span>
+                                          <Input
+                                            type="number"
+                                            min="0"
+                                            step="0.01"
+                                            value={row.price}
+                                            onChange={(e) => handlePriceChange(globalIndex, e.target.value)}
+                                            placeholder="0.00"
+                                            className="pl-7 pr-12"
+                                          />
+                                          <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-muted-foreground">
+                                            /m²
+                                          </span>
+                                        </>
+                                      ) : (
+                                        <>
+                                          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">
+                                            $
+                                          </span>
+                                          <Input
+                                            type="number"
+                                            min="0"
+                                            step="0.01"
+                                            value={row.price}
+                                            onChange={(e) => handlePriceChange(globalIndex, e.target.value)}
+                                            placeholder="0.00"
+                                            className="pl-7"
+                                          />
+                                        </>
+                                      )}
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <p className="text-xs text-muted-foreground mt-4">
-                Note: Only the "Enter your price (including margin)" column can be edited. All other columns are fixed.
+              <p className="text-xs text-muted-foreground mt-6 p-3 bg-blue-50 rounded-md">
+                <strong>Note:</strong> Only the "Enter your price (including margin)" column can be edited. 
+                {pricingTable.some(r => r.priceType === "sqm") && " For per-m² items, enter the price per square meter."}
+                {pricingTable.some(r => r.priceType === "percentage") && " For percentage items, enter the percentage (e.g., 30 for 30%)."}
               </p>
             </CardContent>
           </Card>

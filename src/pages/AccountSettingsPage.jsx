@@ -25,6 +25,7 @@ import {
   Bell,
   CreditCard,
   XCircle,
+  FileText,
 } from "lucide-react";
 import { apiClient } from "@/lib/apiClient";
 
@@ -49,6 +50,7 @@ const AccountSettingsPage = () => {
     business_name: "",
     full_name: "",
     phone_number: "",
+    abn: "",
   });
   const [subscription, setSubscription] = useState({
     status: "",
@@ -68,6 +70,7 @@ const AccountSettingsPage = () => {
         full_name: builderData.contactName || builderData.businessName || "",
         business_name: builderData.businessName || "",
         phone_number: builderData.phone || "",
+        abn: builderData.abn || "",
       });
       setSubscription({
         status: builderData.subscriptionStatus,
@@ -96,6 +99,7 @@ const AccountSettingsPage = () => {
         businessName: profile.business_name,
         phone: profile.phone_number,
         contactName: profile.full_name,
+        abn: profile.abn,
       });
       await refreshProfile();
       toast({ title: "Profile updated successfully!" });
@@ -239,6 +243,7 @@ const AccountSettingsPage = () => {
                         <Input id="email" value={builder.email} disabled />
                       </div>
                       <div><Label htmlFor="phone_number">Phone Number</Label><Input id="phone_number" value={profile.phone_number} onChange={(e) => handleInputChange(e, setProfile)} placeholder="+1 (555) 123-4567" /></div>
+                      <div><Label htmlFor="abn">ABN (Australian Business Number)</Label><Input id="abn" value={profile.abn} onChange={(e) => handleInputChange(e, setProfile)} placeholder="12 345 678 901" maxLength={14} /></div>
                     </>
                   ) : (
                     <>
@@ -250,6 +255,7 @@ const AccountSettingsPage = () => {
                         value={builder.email}
                       />
                       <InfoField icon={<Phone className="h-4 w-4 text-muted-foreground" />} label="Phone Number" value={profile.phone_number} />
+                      <InfoField icon={<FileText className="h-4 w-4 text-muted-foreground" />} label="ABN (Australian Business Number)" value={profile.abn} />
                     </>
                   )}
                 </div>

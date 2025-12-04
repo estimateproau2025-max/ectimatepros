@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -113,6 +113,14 @@ export function Auth() {
               <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600" disabled={loading}>
                 {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Logging in...</> : 'Login'}
               </Button>
+              <div className="text-center mt-4">
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-orange-500 hover:text-orange-600 hover:underline"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
             </form>
           </CardContent>
         </Card>

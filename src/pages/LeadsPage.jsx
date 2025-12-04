@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { apiClient } from "@/lib/apiClient";
-import { Loader2, RefreshCcw, Phone, Mail, Calendar, Trash2 } from "lucide-react";
+import { Loader2, RefreshCcw, Phone, Mail, Calendar, Trash2, FileText } from "lucide-react";
+import QuoteModal from "@/components/quotes/QuoteModal";
 
 const leadStatuses = [
   "New",
@@ -29,6 +30,7 @@ const LeadsPage = () => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [notes, setNotes] = useState("");
+  const [showQuoteModal, setShowQuoteModal] = useState(false);
 
   const fetchLeads = async () => {
     try {
@@ -467,6 +469,18 @@ const LeadsPage = () => {
                     </div>
                   )}
 
+                  {selectedLead.estimate && (
+                    <div>
+                      <Button
+                        onClick={() => setShowQuoteModal(true)}
+                        className="w-full bg-orange-500 hover:bg-orange-600"
+                      >
+                        <FileText className="mr-2 h-4 w-4" />
+                        Create Quote
+                      </Button>
+                    </div>
+                  )}
+
                   <div className="pt-4 border-t">
                     <Button
                       variant="destructive"
@@ -488,6 +502,12 @@ const LeadsPage = () => {
             </CardContent>
           </Card>
         </div>
+
+        <QuoteModal
+          lead={selectedLead}
+          open={showQuoteModal}
+          onClose={() => setShowQuoteModal(false)}
+        />
       </motion.div>
     </>
   );

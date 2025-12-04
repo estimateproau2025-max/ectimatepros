@@ -18,11 +18,14 @@ import ThankYouPage from '@/pages/ThankYouPage';
 import PublicSurveyPage from '@/pages/PublicSurveyPage';
 import LeadsPage from '@/pages/LeadsPage';
 import AdminDashboardPage from '@/pages/AdminDashboardPage';
+import ForgotPasswordPage from '@/pages/ForgotPasswordPage';
+import ResetPasswordPage from '@/pages/ResetPasswordPage';
 
 const SiteLayout = () => {
   const location = useLocation();
   const isAuthPage = location.pathname === '/auth';
   const isSurveyPage = location.pathname.startsWith('/survey/');
+  const isPasswordResetPage = location.pathname === '/forgot-password' || location.pathname === '/reset-password';
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -30,7 +33,7 @@ const SiteLayout = () => {
       <main className="flex-grow">
         <Outlet />
       </main>
-      {!isAuthPage && !isSurveyPage && <Footer />}
+      {!isAuthPage && !isSurveyPage && !isPasswordResetPage && <Footer />}
     </div>
   );
 };
@@ -61,6 +64,8 @@ function App() {
           <Route element={<SiteLayout />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/terms-of-service" element={<TermsOfServicePage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/survey/:slug" element={<PublicSurveyPage />} />
