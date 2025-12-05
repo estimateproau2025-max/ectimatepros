@@ -27,7 +27,7 @@ const QuoteModal = ({ lead, open, onClose }) => {
 
   useEffect(() => {
     if (builder?.quoteTerms !== undefined) {
-      setTerms(builder.quoteTerms || "");
+      setTerms("");
     }
   }, [builder]);
 
