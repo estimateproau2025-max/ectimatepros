@@ -55,6 +55,7 @@ function App() {
           >
             <Route index element={<DashboardPage />} />
             <Route path="leads" element={<LeadsPage />} />
+            <Route path="leads/:leadId" element={<LeadsPage />} />
             <Route path="pricing-setup" element={<PricingSetupPage />} />
             <Route path="client-survey" element={<ClientSurveyPage />} />
             <Route path="account-settings" element={<AccountSettingsPage />} />

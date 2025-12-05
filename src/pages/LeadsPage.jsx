@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
@@ -24,6 +25,8 @@ const leadStatuses = [
 
 const LeadsPage = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { leadId: leadIdParam } = useParams();
   const [leads, setLeads] = useState([]);
   const [selectedLead, setSelectedLead] = useState(null);
   const [filterStatus, setFilterStatus] = useState("all");
@@ -38,8 +41,17 @@ const LeadsPage = () => {
       const response = await apiClient.get("/leads");
       const data = response.leads || [];
       setLeads(data);
-      if (data.length && !selectedLead) {
-        setSelectedLead(data[0]);
+      if (data.length) {
+        const target = leadIdParam
+          ? data.find(
+              (lead) => (lead._id || lead.id || "").toString() === leadIdParam
+            )
+          : null;
+        if (target) {
+          setSelectedLead(target);
+        } else if (!selectedLead) {
+          setSelectedLead(data[0]);
+        }
       }
     } catch (error) {
       toast({
@@ -54,7 +66,18 @@ const LeadsPage = () => {
 
   useEffect(() => {
     fetchLeads();
-  }, []);
+  }, [leadIdParam]);
+
+  // Sync selection when URL param changes after leads are loaded
+  useEffect(() => {
+    if (!leadIdParam || !leads.length) return;
+    const target = leads.find(
+      (lead) => (lead._id || lead.id || "").toString() === leadIdParam
+    );
+    if (target) {
+      setSelectedLead(target);
+    }
+  }, [leadIdParam, leads]);
 
   const filteredLeads = useMemo(() => {
     if (filterStatus === "all") return leads;
@@ -196,7 +219,11 @@ const LeadsPage = () => {
                             className={`cursor-pointer hover:bg-orange-50 ${
                               isSelected ? "bg-orange-50" : ""
                             }`}
-                            onClick={() => setSelectedLead(lead)}
+                            onClick={() => {
+                              setSelectedLead(lead);
+                              const id = leadId || lead.id;
+                              if (id) navigate(`/dashboard/leads/${id}`);
+                            }}
                           >
                             <td className="px-4 py-3">
                               <p className="font-medium text-gray-900">
