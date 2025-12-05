@@ -11,7 +11,7 @@ import html2pdf from "html2pdf.js/dist/html2pdf.bundle.min.js";
 const QuoteModal = ({ lead, open, onClose }) => {
   const { builder } = useAuth();
   const [quoteItems, setQuoteItems] = useState([]);
-  const [terms, setTerms] = useState("Payment terms: 30% deposit required upon acceptance of quote. Balance due upon completion of work.\n\nWarranty: All workmanship guaranteed for 12 months.\n\nValidity: This quote is valid for 30 days from the date of issue.");
+  const [terms, setTerms] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -24,6 +24,12 @@ const QuoteModal = ({ lead, open, onClose }) => {
       setQuoteItems(items);
     }
   }, [lead]);
+
+  useEffect(() => {
+    if (builder?.quoteTerms !== undefined) {
+      setTerms(builder.quoteTerms || "");
+    }
+  }, [builder]);
 
   const subtotal = useMemo(() => {
     return quoteItems.reduce((sum, item) => sum + (Number(item.editableAmount) || 0), 0);

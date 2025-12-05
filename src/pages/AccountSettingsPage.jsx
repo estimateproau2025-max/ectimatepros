@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Loader2,
   Save,
@@ -51,6 +52,7 @@ const AccountSettingsPage = () => {
     full_name: "",
     phone_number: "",
     abn: "",
+    quote_terms: "",
   });
   const [subscription, setSubscription] = useState({
     status: "",
@@ -71,6 +73,7 @@ const AccountSettingsPage = () => {
         business_name: builderData.businessName || "",
         phone_number: builderData.phone || "",
         abn: builderData.abn || "",
+        quote_terms: builderData.quoteTerms || "",
       });
       setSubscription({
         status: builderData.subscriptionStatus,
@@ -100,6 +103,7 @@ const AccountSettingsPage = () => {
         phone: profile.phone_number,
         contactName: profile.full_name,
         abn: profile.abn,
+        quoteTerms: profile.quote_terms,
       });
       await refreshProfile();
       toast({ title: "Profile updated successfully!" });
@@ -244,6 +248,17 @@ const AccountSettingsPage = () => {
                       </div>
                       <div><Label htmlFor="phone_number">Phone Number</Label><Input id="phone_number" value={profile.phone_number} onChange={(e) => handleInputChange(e, setProfile)} placeholder="+1 (555) 123-4567" /></div>
                       <div><Label htmlFor="abn">ABN (Australian Business Number)</Label><Input id="abn" value={profile.abn} onChange={(e) => handleInputChange(e, setProfile)} placeholder="12 345 678 901" maxLength={14} /></div>
+                      <div className="md:col-span-2">
+                        <Label htmlFor="quote_terms">Quote Terms</Label>
+                        <Textarea
+                          id="quote_terms"
+                          value={profile.quote_terms}
+                          onChange={(e) => handleInputChange(e, setProfile)}
+                          placeholder="Default terms that will prefill your quotes..."
+                          className="mt-1"
+                          rows={4}
+                        />
+                      </div>
                     </>
                   ) : (
                     <>
@@ -256,6 +271,12 @@ const AccountSettingsPage = () => {
                       />
                       <InfoField icon={<Phone className="h-4 w-4 text-muted-foreground" />} label="Phone Number" value={profile.phone_number} />
                       <InfoField icon={<FileText className="h-4 w-4 text-muted-foreground" />} label="ABN (Australian Business Number)" value={profile.abn} />
+                      <div className="md:col-span-2">
+                        <Label className="text-xs text-muted-foreground">Quote Terms</Label>
+                        <div className="mt-1 text-sm whitespace-pre-line">
+                          {profile.quote_terms?.trim() ? profile.quote_terms : "Not set"}
+                        </div>
+                      </div>
                     </>
                   )}
                 </div>
