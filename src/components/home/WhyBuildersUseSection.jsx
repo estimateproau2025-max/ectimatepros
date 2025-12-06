@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Filter, Clock, UserCheck, Shield, Smartphone, DollarSign, Brain, Camera, Mail } from 'lucide-react';
+import { Filter, Clock, UserCheck, Shield, Smartphone, DollarSign, Brain, Camera, Mail,FileText  } from 'lucide-react';
 
 const WhyBuildersUseSection = () => {
   return (
@@ -23,7 +23,7 @@ const WhyBuildersUseSection = () => {
             Why Builders Use EstiMate Pro
           </h2>
           <p className="text-lg text-gray-600 italic">
-            "It saves me time and helps me quote faster without wasting hours on site visits or doing admin."
+            "It saves me time and helps me quote faster without wasting hours or doing admin."
           </p>
         </motion.div>
         
@@ -62,9 +62,11 @@ const WhyBuildersUseSection = () => {
             <h3 className="text-2xl font-bold text-gray-900 mb-8">What You'll Get</h3>
             <div className="space-y-6">
               {[
-                { icon: <DollarSign className="h-6 w-6" />, text: "Customisable pricing input" },
+                { icon: <DollarSign className="h-6 w-6" />, text: "Instant Estimates Based on Your Pricing" },
                 { icon: <Brain className="h-6 w-6" />, text: "Smart estimate engine (private)" },
                 { icon: <Camera className="h-6 w-6" />, text: "Client photo upload" },
+                { icon: <FileText className="h-6 w-6" />, text: "Auto-Generated Itemised Quotes" },
+                
                 // { icon: <Mail className="h-6 w-6" />, text: "Quote summary via email" }
               ].map((feature, index) => (
                 <div key={index} className="flex items-center space-x-3">

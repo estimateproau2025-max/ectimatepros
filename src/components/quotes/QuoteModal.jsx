@@ -17,10 +17,20 @@ const QuoteModal = ({ lead, open, onClose }) => {
   useEffect(() => {
     if (lead && lead.estimate?.lineItems) {
       // Initialize quote items from estimate line items
-      const items = lead.estimate.lineItems.map(item => ({
-        ...item,
-        editableAmount: item.total,
-      }));
+      const wallChangeOn = lead.wallChanges === "yes" || lead.wallChanges === true;
+      const items = lead.estimate.lineItems
+        .filter(item => {
+          const name = (item.itemName || "").toLowerCase();
+          // Drop wall knock/shift labour when client said no wall changes
+          if (!wallChangeOn && (name.includes("wall knock") || name.includes("wall shift") || name.includes("knock/shift"))) {
+            return false;
+          }
+          return true;
+        })
+        .map(item => ({
+          ...item,
+          editableAmount: item.total,
+        }));
       setQuoteItems(items);
     }
   }, [lead]);
