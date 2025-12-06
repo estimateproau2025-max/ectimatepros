@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { apiClient } from "@/lib/apiClient";
 import { Loader2, RefreshCcw, Phone, Mail, Calendar, Trash2, FileText } from "lucide-react";
@@ -33,6 +34,7 @@ const LeadsPage = () => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [notes, setNotes] = useState("");
+  const [savingNotes, setSavingNotes] = useState(false);
   const [showQuoteModal, setShowQuoteModal] = useState(false);
 
   const fetchLeads = async () => {
@@ -49,8 +51,10 @@ const LeadsPage = () => {
           : null;
         if (target) {
           setSelectedLead(target);
+          setNotes(target.notes || "");
         } else if (!selectedLead) {
           setSelectedLead(data[0]);
+          setNotes(data[0]?.notes || "");
         }
       }
     } catch (error) {
@@ -76,6 +80,7 @@ const LeadsPage = () => {
     );
     if (target) {
       setSelectedLead(target);
+      setNotes(target.notes || "");
     }
   }, [leadIdParam, leads]);
 
@@ -101,6 +106,26 @@ const LeadsPage = () => {
       });
     } finally {
       setUpdating(false);
+    }
+  };
+
+  const handleSaveNotes = async () => {
+    if (!selectedLead?._id && !selectedLead?.id) return;
+    try {
+      setSavingNotes(true);
+      const leadId = selectedLead._id || selectedLead.id;
+      await apiClient.patch(`/leads/${leadId}/notes`, { notes });
+      toast({ title: "Notes saved", description: "Internal notes updated." });
+      await fetchLeads();
+      setSelectedLead((prev) => (prev ? { ...prev, notes } : prev));
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Unable to save notes",
+        description: error.message,
+      });
+    } finally {
+      setSavingNotes(false);
     }
   };
 
@@ -457,15 +482,30 @@ const LeadsPage = () => {
                     <Label className="text-xs uppercase text-muted-foreground">
                       Internal notes
                     </Label>
-                    <Input
-                      placeholder="Coming soon"
+                    <Textarea
+                      placeholder="Add internal notes (visible only to your team)"
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
-                      disabled
+                      className="min-h-[90px]"
+                      disabled={savingNotes || updating}
                     />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Notes sync is on the roadmap.
-                    </p>
+                    <div className="flex justify-end mt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleSaveNotes}
+                        disabled={savingNotes || updating}
+                      >
+                        {savingNotes ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          "Save notes"
+                        )}
+                      </Button>
+                    </div>
                   </div>
 
                   {selectedLead.photoPaths?.length > 0 && (

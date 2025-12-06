@@ -470,7 +470,7 @@ const PublicSurveyPage = () => {
                           <li>High estimate = Base estimate × 1.30</li>
                         </ul>
                       </div> */}
-                    {/* </div> */}
+                    {/* </div>image.png */}
                   </div>
                 </section>
 
