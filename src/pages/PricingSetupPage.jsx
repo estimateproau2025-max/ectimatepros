@@ -221,6 +221,7 @@ const PricingSetupPage = () => {
                 <p>
                   A good starting point is the average amount you've charged for similar items across 3–4 typical bathroom renos.
                 </p>
+
                 <div>
                   <p className="font-semibold text-gray-900 mb-2">How it works:</p>
                   <ul className="list-disc list-inside space-y-1 ml-2">
@@ -233,8 +234,8 @@ const PricingSetupPage = () => {
                     </ul>
                   </ul>
                 </div>
+
                 <div>
-                  <p className="font-semibold text-gray-900 mb-2">How to fill your pricing template in:</p>
                   <ul className="list-disc list-inside space-y-1 ml-2 mb-2 text-gray-800">
                     <li>
                       Tiling is automatically calculated based on the option your client selects:
@@ -245,6 +246,7 @@ const PricingSetupPage = () => {
                       </ul>
                     </li>
                   </ul>
+                  <p className="font-semibold text-gray-900 mb-2">How to fill your pricing template in:</p>
                   <p className="mb-1">In the "Enter your price (including margin)" column:</p>
                   <ul className="list-disc list-inside space-y-1 ml-2">
                     <li>Enter a fixed price or $ per m², depending on what the row says.</li>
