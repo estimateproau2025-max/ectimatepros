@@ -194,9 +194,8 @@ const PricingSetupPage = () => {
 
         <div className="space-y-6">
           <Card>
-            <CardHeader>
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-4">
-                <CardTitle>Pricing Setup</CardTitle>
+              <CardHeader>
+                <div className="flex w-full justify-end mb-4">
                 <Button
                   className="bg-orange-500 hover:bg-orange-600 shrink-0"
                   onClick={handleSavePricingTable}
@@ -236,6 +235,16 @@ const PricingSetupPage = () => {
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900 mb-2">How to fill your pricing template in:</p>
+                  <ul className="list-disc list-inside space-y-1 ml-2 mb-2 text-gray-800">
+                    <li>
+                      Tiling is automatically calculated based on the option your client selects:
+                      <ul className="list-disc list-inside space-y-1 ml-4">
+                        <li>Budget = floor area + approx. 30% of wall area (splash zones)</li>
+                        <li>Standard = floor area + approx. 50% of wall area (feature wall & wet areas)</li>
+                        <li>Premium = floor area + 100% of wall area (floor to ceiling)</li>
+                      </ul>
+                    </li>
+                  </ul>
                   <p className="mb-1">In the "Enter your price (including margin)" column:</p>
                   <ul className="list-disc list-inside space-y-1 ml-2">
                     <li>Enter a fixed price or $ per m², depending on what the row says.</li>

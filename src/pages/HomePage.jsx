@@ -12,7 +12,10 @@ const HomePage = () => {
     <>
       <Helmet>
         <title>EstiMate Pro - Spend Less Time Quoting</title>
-        <meta name="description" content="EstiMate Pro is your personal quoting assistant built specifically for bathroom renovations. Save time and quote accurately over the phone." />
+        <meta
+          name="description"
+          content="EstiMate Pro is your automated estimating and quoting assistant for bathroom renovators—collect client details, measurements, and preferences, then generate accurate estimates and itemised quotes in seconds."
+        />
       </Helmet>
       
       <HeroSection />

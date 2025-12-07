@@ -29,7 +29,7 @@ const HeroSection = () => {
             </h1>
             
             <p className="text-lg text-gray-600 leading-relaxed max-w-lg">
-              EstiMate Pro is your personal quoting assistant - built specifically for bathroom renovations. It collects client design preferences, measurements, and photos so you can quote accurately over the phone. Save site visits for closing serious clients - not chasing tyre-kickers.
+              EstiMate Pro is your automated estimating and quoting assistant—built specifically for bathroom renovators. It collects client details, measurements, and preferences, then instantly generates both an accurate estimate and a ready-to-send itemised quote based on your pricing. No more endless quoting admin. Just fast, consistent quoting—done in seconds.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4">
