@@ -24,6 +24,43 @@ const leadStatuses = [
   "Client Uncontactable",
 ];
 
+// Derive an estimate from stored line items so display always matches quote logic
+const deriveEstimate = (lead) => {
+  if (!lead?.estimate?.lineItems) return null;
+
+  const wallChangeOn = lead.wallChanges === "yes" || lead.wallChanges === true;
+
+  const filtered = lead.estimate.lineItems.filter((item) => {
+    const name = (item.itemName || "").toLowerCase();
+    if (!wallChangeOn && (name.includes("wall knock") || name.includes("wall shift") || name.includes("knock/shift"))) {
+      return false;
+    }
+    return true;
+  });
+
+  const subtotal = filtered
+    .filter((item) => item.priceType !== "percentage")
+    .reduce((sum, item) => sum + (Number(item.total) || 0), 0);
+
+  const percentageTotal = filtered
+    .filter((item) => item.priceType === "percentage")
+    .reduce((sum, item) => {
+      const pct = Number(item.unitPrice ?? item.markupPercent ?? 0);
+      const amount = (subtotal * pct) / 100;
+      return sum + amount;
+    }, 0);
+
+  const baseEstimate = subtotal + percentageTotal;
+  const highEstimate = baseEstimate * 1.3;
+
+  return {
+    subtotal,
+    percentageTotal,
+    baseEstimate,
+    highEstimate,
+  };
+};
+
 const LeadsPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -226,7 +263,18 @@ const LeadsPage = () => {
                       {filteredLeads.map((lead) => {
                         const leadId = lead._id || lead.id;
                         const date = lead.submittedAt || lead.createdAt;
-                        const estimateText = lead.estimate
+                        const derived = deriveEstimate(lead);
+                        const estimateText = derived
+                          ? `${new Intl.NumberFormat("en-AU", {
+                              style: "currency",
+                              currency: "AUD",
+                              maximumFractionDigits: 0,
+                            }).format(derived.baseEstimate)} - ${new Intl.NumberFormat("en-AU", {
+                              style: "currency",
+                              currency: "AUD",
+                              maximumFractionDigits: 0,
+                            }).format(derived.highEstimate)}`
+                          : lead.estimate
                           ? `${new Intl.NumberFormat("en-AU", {
                               style: "currency",
                               currency: "AUD",
@@ -434,28 +482,39 @@ const LeadsPage = () => {
                     </div>
                   )}
 
-                  {selectedLead.estimate && (
+                {(() => {
+                  const derived = deriveEstimate(selectedLead);
+                  if (!derived && !selectedLead.estimate) return null;
+                  const base =
+                    derived?.baseEstimate ??
+                    selectedLead.estimate?.baseEstimate ??
+                    0;
+                  const high =
+                    derived?.highEstimate ??
+                    selectedLead.estimate?.highEstimate ??
+                    0;
+
+                  return (
                     <div className="rounded-lg bg-orange-50 p-4">
                       <p className="text-xs uppercase text-orange-600">
                         Internal estimate
                       </p>
                       <p className="text-xl font-semibold text-gray-900">
-                        {new Intl.NumberFormat("en-AU", {
+                        {`${new Intl.NumberFormat("en-AU", {
                           style: "currency",
                           currency: "AUD",
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
-                        }).format(selectedLead.estimate.baseEstimate)}{" "}
-                        –{" "}
-                        {new Intl.NumberFormat("en-AU", {
+                        }).format(base)} – ${new Intl.NumberFormat("en-AU", {
                           style: "currency",
                           currency: "AUD",
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
-                        }).format(selectedLead.estimate.highEstimate)}
+                        }).format(high)}`}
                       </p>
                     </div>
-                  )}
+                  );
+                })()}
 
                   <div>
                     <Label className="text-xs uppercase text-muted-foreground">
