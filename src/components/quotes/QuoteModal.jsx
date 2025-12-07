@@ -37,7 +37,7 @@ const QuoteModal = ({ lead, open, onClose }) => {
 
   useEffect(() => {
     if (builder?.quoteTerms !== undefined) {
-      setTerms("");
+      setTerms(builder?.quoteTerms);
     }
   }, [builder]);
 
@@ -116,7 +116,8 @@ const QuoteModal = ({ lead, open, onClose }) => {
             next.unitPrice = next.unitPrice ?? 0;
             next.markupPercent = undefined;
           } else {
-            next.unitPrice = next.unitPrice ?? 0;
+            // fixed
+            next.unitPrice = next.unitPrice ?? next.editableAmount ?? 0;
             next.quantity = undefined;
             next.markupPercent = undefined;
           }
@@ -130,6 +131,10 @@ const QuoteModal = ({ lead, open, onClose }) => {
           next.markupPercent = value;
         } else if (field === "editableAmount") {
           next.editableAmount = value;
+          // keep unitPrice in sync for fixed custom items so recalc doesn't zero it out
+          if (next.isCustom && next.priceType === "fixed") {
+            next.unitPrice = value;
+          }
         }
 
         return next;
@@ -418,8 +423,10 @@ const QuoteModal = ({ lead, open, onClose }) => {
                         return (
                           <tr key={index} className="bg-gray-50">
                             <td className="border border-gray-300 px-3 py-2 font-medium">Project Management - All labour, project management & administration costs</td>
-                            <td className="border border-gray-300 px-3 py-2">Fixed</td>
-                            <td className="border border-gray-300 px-3 py-2">-</td>
+                            <td className="border border-gray-300 px-3 py-2">Percentage</td>
+                            <td className="border border-gray-300 px-3 py-2">
+                              {item.unitPrice ? `${item.unitPrice}% of subtotal` : "-"}
+                            </td>
                             <td className="border border-gray-300 px-3 py-2">
                               <div className="flex items-center justify-end gap-2">
                                 <span className="text-muted-foreground">$</span>

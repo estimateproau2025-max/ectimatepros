@@ -443,13 +443,15 @@ const LeadsPage = () => {
                         {new Intl.NumberFormat("en-AU", {
                           style: "currency",
                           currency: "AUD",
-                          maximumFractionDigits: 0,
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
                         }).format(selectedLead.estimate.baseEstimate)}{" "}
                         –{" "}
                         {new Intl.NumberFormat("en-AU", {
                           style: "currency",
                           currency: "AUD",
-                          maximumFractionDigits: 0,
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
                         }).format(selectedLead.estimate.highEstimate)}
                       </p>
                     </div>
