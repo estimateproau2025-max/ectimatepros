@@ -339,104 +339,48 @@ const ClientSurveyPage = () => {
   
   return (
     <>
-      <Helmet>
-        <title>Client Survey Preview - EstiMate Pro</title>
-        <meta name="description" content="This is a preview of the survey your clients will fill out to generate an estimate." />
-      </Helmet>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="bg-gray-50 -m-4 sm:-m-6 p-4 sm:p-6 lg:p-8 flex justify-center">
-        <div className="max-w-4xl w-full bg-white rounded-lg p-6 sm:p-10">
-          <div className="text-center mb-10">
-            <div className="inline-block p-3 bg-orange-100 rounded-full mb-4">
-                <Home className="h-8 w-8 text-orange-600" />
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">{surveyConfig.welcome_title}</h1>
-            <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">{surveyConfig.welcome_subtitle}</p>
-            <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg text-sm max-w-3xl mx-auto">
-                {surveyConfig.welcome_info}
+    <>
+  <Helmet>
+    <title>Client Survey Preview - EstiMate Pro</title>
+    <meta name="description" content="This is a preview of the survey your clients will fill out to generate an estimate." />
+  </Helmet>
+
+  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="bg-gray-50 -m-4 sm:-m-6 p-4 sm:p-6 lg:p-8 flex justify-center">
+    <div className="max-w-4xl w-full bg-white rounded-lg p-6 sm:p-10">
+
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="text-lg">Bathroom Estimate - Client facing link</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Share this link with clients so they can complete the live survey. You can also open it in a new tab to test the experience.
+          </p>
+
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Input value={surveyLink || 'Generate a survey link on the dashboard first'} readOnly />
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" onClick={copySurveyLink}>
+                <LinkIcon className="mr-2 h-4 w-4" /> Copy
+              </Button>
+              <Button type="button" onClick={openSurveyLink} disabled={!surveyLink}>
+                <ExternalLink className="mr-2 h-4 w-4" /> Open
+              </Button>
             </div>
           </div>
+        </CardContent>
+      </Card>
 
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="text-lg">Client-facing link</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                Share this link with clients so they can complete the live survey. You can also open it in a new tab to test the experience.
-              </p>
-              <div className="flex flex-col gap-2 sm:flex-row">
-                <Input value={surveyLink || 'Generate a survey link on the dashboard first'} readOnly />
-                <div className="flex gap-2">
-                  <Button type="button" variant="outline" onClick={copySurveyLink}>
-                    <LinkIcon className="mr-2 h-4 w-4" /> Copy
-                  </Button>
-                  <Button type="button" onClick={openSurveyLink} disabled={!surveyLink}>
-                    <ExternalLink className="mr-2 h-4 w-4" /> Open
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+      {/* Added Below */}
+      <p className="text-sm text-muted-foreground mt-4">
+        Share your bathroom estimate survey link directly on your business website (e.g., on a "Get a Quote" or "Contact Us" page).  
+        Start capturing qualified lead information instantly and effortlessly.
+      </p>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {surveyConfig.steps.map(step => {
-              // Special handling for measurements step to show calculations
-              if (step.step === 2) {
-                return (
-                  <div key={step.step} className="border border-gray-200 rounded-lg p-6">
-                    <div className="flex items-start mb-6">
-                      <div className="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-full bg-orange-500 text-white font-bold mr-4">
-                        {step.step}
-                      </div>
-                      <h2 className="text-2xl font-semibold text-gray-800 pt-1">{step.title}</h2>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      {step.fields.map(field => renderField(field))}
-                    </div>
-                    <div className="mt-6">
-                      <h4 className="text-base font-semibold text-gray-900 mb-4">
-                        Calculated Measurements
-                      </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                          <div className="text-2xl font-bold text-blue-600">
-                            {calculatedAreas.floorArea} m²
-                          </div>
-                          <div className="text-sm text-gray-600 mt-1">Floor Area</div>
-                        </div>
-                        <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                          <div className="text-2xl font-bold text-blue-600">
-                            {calculatedAreas.wallArea} m²
-                          </div>
-                          <div className="text-sm text-gray-600 mt-1">Wall Area</div>
-                        </div>
-                        <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                          <div className="text-2xl font-bold text-blue-600">
-                            {calculatedAreas.totalArea} m²
-                          </div>
-                          <div className="text-sm text-gray-600 mt-1">Total Area</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              }
-              return (
-                <SurveyStep key={step.step} step={step.step} title={step.title}>
-                  {step.fields.map(field => renderField(field))}
-                </SurveyStep>
-              );
-            })}
-            <div className="text-center pt-6">
-                <Button type="submit" size="lg" className="bg-orange-500 hover:bg-orange-600 w-full sm:w-auto" disabled>
-                    <Check className="mr-2 h-5 w-5" />
-                    {surveyConfig.submit_button_text}
-                </Button>
-                <p className="text-xs text-muted-foreground mt-3">Please complete all required fields to submit your estimate request.</p>
-            </div>
-          </form>
-        </div>
-      </motion.div>
+    </div>
+  </motion.div>
+</>
+
     </>
   );
 };
