@@ -221,12 +221,6 @@ const QuoteModal = ({ lead, open, onClose }) => {
     return lead.bathroomType;
   };
 
-  const getItemType = (item) => {
-    if (item.priceType === "sqm") return "per m²";
-    if (item.priceType === "percentage") return "Percentage";
-    return "Fixed";
-  };
-
   const getItemQuantity = (item) => {
     if (item.priceType === "sqm") {
       // For tiling items, show the tiled area based on tiling level
@@ -320,7 +314,6 @@ const QuoteModal = ({ lead, open, onClose }) => {
                 <thead>
                   <tr className="bg-gray-100">
                     <th className="border border-gray-300 px-3 py-2 text-left font-semibold">Item</th>
-                    <th className="border border-gray-300 px-3 py-2 text-left font-semibold">Type</th>
                     <th className="border border-gray-300 px-3 py-2 text-left font-semibold">Quantity</th>
                     <th className="border border-gray-300 px-3 py-2 text-right font-semibold">Amount</th>
                   </tr>
@@ -331,22 +324,22 @@ const QuoteModal = ({ lead, open, onClose }) => {
                       return (
                         <tr key={`custom-${index}`} className="hover:bg-gray-50">
                           <td className="border border-gray-300 px-3 py-2">
-                            <Input
-                              value={item.itemName}
-                              onChange={(e) => handleCustomFieldChange(index, "itemName", e.target.value)}
-                              placeholder="Custom item"
-                            />
-                          </td>
-                          <td className="border border-gray-300 px-3 py-2">
-                            <select
-                              className="w-full border border-input rounded-md h-9 px-2 text-sm"
-                              value={item.priceType}
-                              onChange={(e) => handleCustomFieldChange(index, "priceType", e.target.value)}
-                            >
-                              <option value="fixed">Fixed</option>
-                              <option value="sqm">per m²</option>
-                              <option value="percentage">Percentage</option>
-                            </select>
+                            <div className="flex flex-col gap-2">
+                              <Input
+                                value={item.itemName}
+                                onChange={(e) => handleCustomFieldChange(index, "itemName", e.target.value)}
+                                placeholder="Custom item"
+                              />
+                              <select
+                                className="w-full border border-input rounded-md h-9 px-2 text-sm"
+                                value={item.priceType}
+                                onChange={(e) => handleCustomFieldChange(index, "priceType", e.target.value)}
+                              >
+                                <option value="fixed">Fixed</option>
+                                <option value="sqm">per m²</option>
+                                <option value="percentage">Percentage</option>
+                              </select>
+                            </div>
                           </td>
                           <td className="border border-gray-300 px-3 py-2">
                             {item.priceType === "sqm" && (
@@ -423,9 +416,8 @@ const QuoteModal = ({ lead, open, onClose }) => {
                         return (
                           <tr key={index} className="bg-gray-50">
                             <td className="border border-gray-300 px-3 py-2 font-medium">Project Management - All labour, project management & administration costs</td>
-                            <td className="border border-gray-300 px-3 py-2">Percentage</td>
                             <td className="border border-gray-300 px-3 py-2">
-                              {item.unitPrice ? `${item.unitPrice}% of subtotal` : "-"}
+                              {/* {item.unitPrice ? `${item.unitPrice}% of subtotal` : "-"} */}-
                             </td>
                             <td className="border border-gray-300 px-3 py-2">
                               <div className="flex items-center justify-end gap-2">
@@ -448,7 +440,6 @@ const QuoteModal = ({ lead, open, onClose }) => {
                         return (
                           <tr key={index}>
                             <td className="border border-gray-300 px-3 py-2">Access/difficult site</td>
-                            <td className="border border-gray-300 px-3 py-2">Percentage</td>
                             <td className="border border-gray-300 px-3 py-2">-</td>
                             <td className="border border-gray-300 px-3 py-2">
                               <div className="flex items-center justify-end gap-2">
@@ -477,7 +468,6 @@ const QuoteModal = ({ lead, open, onClose }) => {
                         return (
                           <tr key={index} className="opacity-60">
                             <td className="border border-gray-300 px-3 py-2">{item.itemName}</td>
-                            <td className="border border-gray-300 px-3 py-2">{getItemType(item)}</td>
                             <td className="border border-gray-300 px-3 py-2">Not Included</td>
                             <td className="border border-gray-300 px-3 py-2 text-right">$0.00</td>
                           </tr>
@@ -488,7 +478,6 @@ const QuoteModal = ({ lead, open, onClose }) => {
                     return (
                       <tr key={index} className="hover:bg-gray-50">
                         <td className="border border-gray-300 px-3 py-2">{item.itemName}</td>
-                        <td className="border border-gray-300 px-3 py-2">{getItemType(item)}</td>
                         <td className="border border-gray-300 px-3 py-2">{getItemQuantity(item)}</td>
                         <td className="border border-gray-300 px-3 py-2">
                           <div className="flex items-center justify-end gap-2">
