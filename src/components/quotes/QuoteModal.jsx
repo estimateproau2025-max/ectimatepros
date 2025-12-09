@@ -31,7 +31,8 @@ const QuoteModal = ({ lead, open, onClose }) => {
           ...item,
           editableAmount: item.total,
         }));
-      setQuoteItems(items);
+      const recalculated = recalcAllItems(items);
+      setQuoteItems(recalculated);
     }
   }, [lead]);
 
@@ -42,9 +43,9 @@ const QuoteModal = ({ lead, open, onClose }) => {
   }, [builder]);
 
   const recalcCustomItems = (items) => {
-    // Base subtotal excludes custom percentage items so they can calculate on top
+    // Base subtotal excludes all percentage items so they calculate on top
     const baseSubtotal = items.reduce((sum, item) => {
-      if (item.isCustom && item.priceType === "percentage") return sum;
+      if (item.priceType === "percentage") return sum;
       return sum + (Number(item.editableAmount) || 0);
     }, 0);
 
@@ -77,6 +78,26 @@ const QuoteModal = ({ lead, open, onClose }) => {
     return changed ? updated : items;
   };
 
+  const recalcAllItems = (items) => {
+    // First, sync custom items (sqm, percentage, fixed)
+    const withCustoms = recalcCustomItems(items);
+
+    // Then recompute percentage-type items (non-custom) based on fixed + sqm subtotal
+    const baseSubtotal = withCustoms.reduce((sum, item) => {
+      if (item.priceType === "percentage") return sum;
+      return sum + (Number(item.editableAmount ?? item.total) || 0);
+    }, 0);
+
+    const updated = withCustoms.map((item) => {
+      if (item.priceType !== "percentage" || item.isCustom) return item;
+      const pct = Number(item.unitPrice ?? item.markupPercent ?? 0);
+      const amount = baseSubtotal * (pct / 100);
+      return { ...item, editableAmount: amount };
+    });
+
+    return updated;
+  };
+
   const subtotal = useMemo(() => {
     return quoteItems.reduce((sum, item) => sum + (Number(item.editableAmount) || 0), 0);
   }, [quoteItems]);
@@ -94,7 +115,7 @@ const QuoteModal = ({ lead, open, onClose }) => {
       const updated = prev.map((item, idx) =>
         idx === index ? { ...item, editableAmount: value } : item
       );
-      return recalcCustomItems(updated);
+      return recalcAllItems(updated);
     });
   };
 
@@ -140,7 +161,7 @@ const QuoteModal = ({ lead, open, onClose }) => {
         return next;
       });
 
-      return recalcCustomItems(updated);
+      return recalcAllItems(updated);
     });
   };
 
@@ -158,14 +179,14 @@ const QuoteModal = ({ lead, open, onClose }) => {
           isCustom: true,
         },
       ];
-      return recalcCustomItems(updated);
+      return recalcAllItems(updated);
     });
   };
 
   const handleRemoveCustomItem = (index) => {
     setQuoteItems(prev => {
       const updated = prev.filter((_, idx) => idx !== index);
-      return recalcCustomItems(updated);
+      return recalcAllItems(updated);
     });
   };
 
