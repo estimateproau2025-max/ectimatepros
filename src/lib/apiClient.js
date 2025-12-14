@@ -1,7 +1,7 @@
 import { getStoredSession, clearSession } from "./storage";
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://esitmatebackend.vercel.app/api";
+  import.meta.env.VITE_API_BASE_URL || "https://ectimateprobackend.vercel.app/api";
 
 let redirectingDueToAuth = false;
 
