@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { motion } from "framer-motion";
+import { Navigate, useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { apiClient } from "@/lib/apiClient";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Loader2,
   RefreshCcw,
@@ -19,6 +21,8 @@ import {
 
 const AdminDashboardPage = () => {
   const { toast } = useToast();
+  const { builder: currentBuilder } = useAuth();
+  const navigate = useNavigate();
   const [summary, setSummary] = useState(null);
   const [builders, setBuilders] = useState([]);
   const [leads, setLeads] = useState([]);
@@ -26,6 +30,7 @@ const AdminDashboardPage = () => {
   const [builderFilter, setBuilderFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [subscriptionFilter, setSubscriptionFilter] = useState("all");
+  const [accessFilter, setAccessFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
 
   const fetchData = async () => {
@@ -51,24 +56,70 @@ const AdminDashboardPage = () => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (!currentBuilder) return; // wait until profile is loaded
+    if (currentBuilder.role === "admin") {
+      fetchData();
+    } else {
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentBuilder]);
+
+  const computeAccountStatus = (builder) => {
+    const now = new Date();
+    if (builder?.isAccessDisabled) return "Disabled";
+    if (builder?.subscriptionStatus === "active") return "Active (Paid)";
+    if (builder?.subscriptionStatus === "trialing") {
+      if (builder?.trialEndsAt && new Date(builder.trialEndsAt) < now) {
+        return "Expired";
+      }
+      return "Trial";
+    }
+    return "Expired";
+  };
+
+  const formatDate = (value) => {
+    if (!value) return "--";
+    const date = new Date(value);
+    return isNaN(date.getTime())
+      ? "--"
+      : date.toLocaleDateString(undefined, {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+  };
 
   const filteredBuilders = useMemo(() => {
     let filtered = builders;
     if (subscriptionFilter !== "all") {
-      filtered = filtered.filter((b) => b.subscriptionStatus === subscriptionFilter);
+      if (subscriptionFilter === "trial") {
+        filtered = filtered.filter((b) => computeAccountStatus(b) === "Trial");
+      } else if (subscriptionFilter === "paid") {
+        filtered = filtered.filter(
+          (b) => computeAccountStatus(b) === "Active (Paid)"
+        );
+      }
+    }
+    if (accessFilter !== "all") {
+      filtered = filtered.filter((b) =>
+        accessFilter === "disabled" ? b.isAccessDisabled : !b.isAccessDisabled
+      );
     }
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (b) =>
+      filtered = filtered.filter((b) => {
+        const phone = b.phone ? String(b.phone).toLowerCase() : "";
+        return (
           b.businessName?.toLowerCase().includes(term) ||
-          b.email?.toLowerCase().includes(term)
-      );
+          b.email?.toLowerCase().includes(term) ||
+          b.contactName?.toLowerCase().includes(term) ||
+          phone.includes(term)
+        );
+      });
     }
     return filtered;
-  }, [builders, subscriptionFilter, searchTerm]);
+  }, [builders, subscriptionFilter, accessFilter, searchTerm]);
 
   const filteredLeads = useMemo(() => {
     let filtered = leads;
@@ -104,13 +155,17 @@ const AdminDashboardPage = () => {
 
   const getStatusBadge = (status) => {
     const colors = {
-      trialing: "bg-blue-100 text-blue-800",
-      active: "bg-green-100 text-green-800",
-      inactive: "bg-gray-100 text-gray-800",
-      past_due: "bg-yellow-100 text-yellow-800",
+      "Active (Paid)": "bg-green-100 text-green-800",
+      Trial: "bg-blue-100 text-blue-800",
+      Expired: "bg-gray-100 text-gray-800",
+      Disabled: "bg-red-100 text-red-800",
     };
-    return colors[status] || colors.inactive;
+    return colors[status] || colors.Expired;
   };
+
+  if (currentBuilder && currentBuilder.role !== "admin") {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   if (loading) {
     return (
@@ -185,8 +240,8 @@ const AdminDashboardPage = () => {
               <CardTitle>Builders</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex gap-2">
-                <div className="relative flex-1">
+              <div className="flex gap-2 flex-wrap">
+                <div className="relative flex-1 min-w-[220px]">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search builders..."
@@ -200,11 +255,18 @@ const AdminDashboardPage = () => {
                   value={subscriptionFilter}
                   onChange={(e) => setSubscriptionFilter(e.target.value)}
                 >
-                  <option value="all">All statuses</option>
-                  <option value="trialing">Trialing</option>
+                  <option value="all">All (Trial/Paid)</option>
+                  <option value="trial">Trial</option>
+                  <option value="paid">Paid</option>
+                </select>
+                <select
+                  className="rounded-md border border-gray-200 px-3 py-2"
+                  value={accessFilter}
+                  onChange={(e) => setAccessFilter(e.target.value)}
+                >
+                  <option value="all">All (Active/Disabled)</option>
                   <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                  <option value="past_due">Past Due</option>
+                  <option value="disabled">Disabled</option>
                 </select>
               </div>
               <div className="max-h-[60vh] overflow-y-auto">
@@ -215,10 +277,28 @@ const AdminDashboardPage = () => {
                         Business
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-medium uppercase">
+                        Contact
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium uppercase">
                         Email
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-medium uppercase">
+                        Phone
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium uppercase">
                         Status
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium uppercase">
+                        Signup
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium uppercase">
+                        Trial Ends
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium uppercase">
+                        Last Login
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium uppercase">
+                        View
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-medium uppercase">
                         Access
@@ -226,42 +306,71 @@ const AdminDashboardPage = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
-                    {filteredBuilders.map((builder) => (
-                      <tr key={builder._id || builder.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 font-medium">
-                          {builder.businessName || "N/A"}
-                        </td>
-                        <td className="px-4 py-3 text-muted-foreground">
-                          {builder.email}
-                        </td>
-                        <td className="px-4 py-3">
-                          <Badge
-                            variant="outline"
-                            className={getStatusBadge(builder.subscriptionStatus)}
-                          >
-                            {builder.subscriptionStatus || "inactive"}
-                          </Badge>
-                        </td>
-                        <td className="px-4 py-3">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              toggleBuilderAccess(
-                                builder._id || builder.id,
-                                builder.isAccessDisabled
-                              )
-                            }
-                          >
-                            {builder.isAccessDisabled ? (
-                              <ToggleLeft className="h-5 w-5 text-red-600" />
-                            ) : (
-                              <ToggleRight className="h-5 w-5 text-green-600" />
-                            )}
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
+                    {filteredBuilders.map((builder) => {
+                      const accountStatus = computeAccountStatus(builder);
+                      return (
+                        <tr key={builder._id || builder.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-3 font-medium">
+                            {builder.businessName || "N/A"}
+                          </td>
+                          <td className="px-4 py-3 text-muted-foreground">
+                            {builder.contactName || "N/A"}
+                          </td>
+                          <td className="px-4 py-3 text-muted-foreground">
+                            {builder.email}
+                          </td>
+                          <td className="px-4 py-3 text-muted-foreground">
+                            {builder.phone || "—"}
+                          </td>
+                          <td className="px-4 py-3">
+                            <Badge
+                              variant="outline"
+                              className={getStatusBadge(accountStatus)}
+                            >
+                              {accountStatus}
+                            </Badge>
+                          </td>
+                          <td className="px-4 py-3 text-muted-foreground">
+                            {formatDate(builder.createdAt)}
+                          </td>
+                          <td className="px-4 py-3 text-muted-foreground">
+                            {formatDate(builder.trialEndsAt)}
+                          </td>
+                          <td className="px-4 py-3 text-muted-foreground">
+                            {formatDate(builder.lastLoginAt)}
+                          </td>
+                          <td className="px-4 py-3">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                navigate(`/dashboard/admin/builders/${builder._id || builder.id}`)
+                              }
+                            >
+                              View
+                            </Button>
+                          </td>
+                          <td className="px-4 py-3">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                toggleBuilderAccess(
+                                  builder._id || builder.id,
+                                  builder.isAccessDisabled
+                                )
+                              }
+                            >
+                              {builder.isAccessDisabled ? (
+                                <ToggleLeft className="h-5 w-5 text-red-600" />
+                              ) : (
+                                <ToggleRight className="h-5 w-5 text-green-600" />
+                              )}
+                            </Button>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

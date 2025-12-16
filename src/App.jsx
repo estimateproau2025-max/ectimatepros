@@ -18,6 +18,7 @@ import ThankYouPage from '@/pages/ThankYouPage';
 import PublicSurveyPage from '@/pages/PublicSurveyPage';
 import LeadsPage from '@/pages/LeadsPage';
 import AdminDashboardPage from '@/pages/AdminDashboardPage';
+import AdminBuilderViewPage from '@/pages/AdminBuilderViewPage';
 import ForgotPasswordPage from '@/pages/ForgotPasswordPage';
 import ResetPasswordPage from '@/pages/ResetPasswordPage';
 
@@ -60,6 +61,7 @@ function App() {
             <Route path="client-survey" element={<ClientSurveyPage />} />
             <Route path="account-settings" element={<AccountSettingsPage />} />
             <Route path="admin" element={<AdminDashboardPage />} />
+            <Route path="admin/builders/:builderId" element={<AdminBuilderViewPage />} />
           </Route>
 
           <Route element={<SiteLayout />}>
